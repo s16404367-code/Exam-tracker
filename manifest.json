@@ -1,0 +1,18 @@
+{
+  "name": "CA Final Tracker",
+  "short_name": "CA Tracker",
+  "description": "CA Final Exam — Study Log, Recall Tracker & Progress",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D1B2A",
+  "theme_color": "#0D1B2A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D1B2A'/><text y='70' x='10' font-size='70'>📚</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

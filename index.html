@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CA Tracker">
+<title>CA Final Tracker</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#0D1B2A;--card:#172639;--card2:#1F3347;
+  --primary:#4A9EFF;--success:#27AE60;--warn:#F39C12;--danger:#E74C3C;
+  --text:#ECF0F1;--muted:#7F8C8D;--border:#263545;
+  --nav:60px;--hdr:56px;
+  --fr:#4A9EFF;--afm:#2ECC71;--audit:#F39C12;--dt:#E74C3C;--idt:#9B59B6;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+/* ── HEADER ── */
+header{height:var(--hdr);background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:10}
+.logo{font-size:18px;font-weight:700;letter-spacing:.5px}
+.logo span{color:var(--primary)}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync-dot.ok{background:var(--success)}
+.sync-dot.err{background:var(--danger)}
+.sync-dot.busy{background:var(--warn);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.icon-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:8px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.icon-btn:active{background:var(--card2)}
+/* ── MAIN SCROLL ── */
+main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav) + 8px)}
+/* ── BOTTOM NAV ── */
+.bnav{height:var(--nav);background:var(--card);border-top:1px solid var(--border);display:flex;flex-shrink:0;position:sticky;bottom:0}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--muted);font-size:10px;cursor:pointer;transition:color .15s}
+.bnav-btn.active{color:var(--primary)}
+.bnav-btn svg,.bnav-btn .ni{font-size:22px;line-height:1}
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:14px;padding:16px;margin:12px 16px 0}
+.card2{background:var(--card2);border-radius:10px;padding:12px 14px;margin-top:10px}
+.section-title{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin:16px 16px 0}
+/* ── HOME ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 0}
+.stat-card{background:var(--card);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;gap:6px}
+.stat-val{font-size:28px;font-weight:800;line-height:1}
+.stat-label{font-size:12px;color:var(--muted)}
+.pace-bar{background:var(--card);border-radius:14px;padding:14px 16px;margin:10px 16px 0;display:flex;align-items:center;gap:12px}
+.pace-info{flex:1}
+.pace-title{font-size:13px;font-weight:600}
+.pace-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+.badge.ok{background:#1a3a2a;color:var(--success)}
+.badge.warn{background:#3a2a1a;color:var(--warn)}
+.badge.err{background:#3a1a1a;color:var(--danger)}
+.badge.na{background:var(--card2);color:var(--muted)}
+.today-card{background:var(--card);border-radius:14px;padding:16px;margin:10px 16px 0}
+.today-hours{font-size:40px;font-weight:800;color:var(--primary);line-height:1}
+.progress-track{height:6px;background:var(--border);border-radius:3px;margin-top:10px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--primary);transition:width .4s}
+.sync-card{background:var(--card);border-radius:14px;padding:14px 16px;margin:10px 16px 0}
+.code-display{font-family:monospace;font-size:22px;font-weight:800;letter-spacing:4px;color:var(--primary);text-align:center;padding:10px;background:var(--card2);border-radius:8px;margin-top:8px}
+/* ── LOG ── */
+.fab{position:fixed;right:16px;bottom:calc(var(--nav) + 16px);width:56px;height:56px;border-radius:50%;background:var(--primary);border:none;color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(74,158,255,.45);cursor:pointer;z-index:20;transition:transform .1s}
+.fab:active{transform:scale(.93)}
+.log-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.subj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.log-main{flex:1;min-width:0}
+.log-chap{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.log-hrs{font-size:16px;font-weight:700;color:var(--primary);flex-shrink:0}
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:30;display:flex;align-items:flex-end}
+.sheet{background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px 40px;width:100%;max-height:90vh;overflow-y:auto}
+.sheet-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px 14px;font-size:16px;outline:none;-webkit-appearance:none;appearance:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M6 8L0 0h12z' fill='%237F8C8D'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field input:focus,.field select:focus{border-color:var(--primary)}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .1s}
+.btn:active{opacity:.8}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-ghost{background:var(--card2);color:var(--text);margin-top:8px}
+.btn-danger{background:var(--danger);color:#fff}
+/* ── RECALL ── */
+.recall-item{padding:14px;background:var(--card2);border-radius:12px;margin-bottom:8px}
+.recall-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.recall-chap{font-size:14px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recall-days{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0}
+.days-due{background:#3a2a1a;color:var(--warn)}
+.days-over{background:#3a1a1a;color:var(--danger)}
+.recall-meta{font-size:12px;color:var(--muted);margin-bottom:10px}
+.recall-btns{display:flex;gap:8px}
+.recall-btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
+.recall-btn.recalled{background:#1a3a2a;color:var(--success);border:1.5px solid var(--success)}
+.recall-btn.skipped{background:var(--card);color:var(--muted);border:1.5px solid var(--border)}
+.recall-btn.active-recalled{background:var(--success);color:#fff}
+.recall-btn.active-skipped{background:var(--muted);color:#fff}
+/* full tracker */
+.tracker-chapter{padding:12px 14px;background:var(--card2);border-radius:10px;margin-bottom:6px}
+.tracker-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.tracker-chap{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tracker-progress{font-size:12px;color:var(--muted);flex-shrink:0}
+.recall-intervals{display:flex;gap:5px;flex-wrap:wrap}
+.interval-chip{padding:5px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;line-height:1.2}
+.chip-done{background:#1a3a2a;color:var(--success)}
+.chip-due{background:#3a2a1a;color:var(--warn)}
+.chip-over{background:#3a1a1a;color:var(--danger)}
+.chip-future{background:var(--card);color:var(--muted);border:1px solid var(--border)}
+.chip-skip{background:var(--card2);color:var(--muted)}
+.chip-ns{background:var(--border);color:var(--muted)}
+/* subject filter */
+.subj-filter{display:flex;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.subj-filter::-webkit-scrollbar{display:none}
+.subj-pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:none;white-space:nowrap;transition:all .15s}
+/* ── PROGRESS ── */
+.prog-subj{background:var(--card);border-radius:14px;padding:16px;margin:10px 16px 0}
+.prog-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.prog-name{font-size:16px;font-weight:700}
+.prog-stats{display:flex;gap:16px;margin-bottom:10px}
+.prog-stat{text-align:center}
+.prog-stat-val{font-size:20px;font-weight:800}
+.prog-stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.prog-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+/* ── SETTINGS ── */
+.settings-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.settings-item:last-child{border-bottom:none}
+.settings-label{flex:1}
+.settings-title{font-size:15px;font-weight:500}
+.settings-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.settings-input{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:14px;text-align:right;width:130px;outline:none}
+.settings-input:focus{border-color:var(--primary)}
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+.empty-sub{font-size:13px}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--nav)+16px);left:50%;transform:translateX(-50%);background:#1a3a2a;color:var(--success);padding:10px 20px;border-radius:20px;font-size:14px;font-weight:600;z-index:99;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.err-toast{background:#3a1a1a;color:var(--danger)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// CHAPTERS DATA (all 146)
+// ════════════════════════════════════════════════════════
+const CHAPTERS = {"FR":["Introduction to Ind AS & Roadmap","Schedule III & Ind AS 1","Ind AS 37 – Provisions, Contingent Liabilities & Contingent Assets","Ind AS 16 – Property, Plant & Equipment","Ind AS 38 – Intangible Assets","Ind AS 40 – Investment Properties","Ind AS 41 – Agriculture","Ind AS 32, 109, 107 – Financial Instruments","Ind AS 2 – Inventories","Ind AS 102 – Share Based Payments","Ind AS 24 – Related Parties","Ind AS 19 – Employee Benefits","Ind AS 20 – Grants","Ind AS 110 – Consolidated Financial Statements","Ind AS 111 – Joint Arrangements","Ind AS 36 – Impairment of Assets","Ind AS 105 – Non-Current Assets Held for Sale","Ind AS 12 – Income Taxes","Ind AS 21 – The Effects of Changes in Foreign Exchange Rates.","Ind AS 116 – Leases","Ind AS 103 – Business Combination","Ind AS 108 – Operating Segments","Ind AS 115 – Revenue from Contracts with Customers","Ind AS 33 – Earnings Per Share","Ind AS 7 – Statement of Cash Flows","Ind AS 101 – First-time Adoption of Ind AS","Ind AS 113 – Fair Value Measurement","Ind AS 23 – Borrowing Costs","Ind AS 34 – Interim Financial Reporting","Analysis of Financial Statements","Accounting & Technology","Conceptual Framework for Financial Reporting","Ind AS 8 – Accounting Policies, Changes in Accounting Estimates and Errors","Ind AS 10 – Events Occurring After the Reporting Period"],"AFM":["Introduction & Forex","Time Value of Money (TVM)","Bond Valuation","Share Valuation","Mutual Funds","Derivatives","Forex Derivatives","Portfolio Management","Mergers & Acquisitions","Capital Budgeting","Business Valuation","International Financial Management","IRRM (Interest Rate Risk Management)","Securitisation","Start-up Finance","Risk Management","Security Analysis"],"Audit":["Quality Control — Chapter 1","General Auditing Principles and Responsibilities (GAAP) — Chapter 2","Audit Strategy — Chapter 3","Risk Assessment, Internal Control and Audit Strategy — Chapter 4","Audit Evidence — Chapter 5","Completion and Review — Chapter 6","Reporting — Chapter 7","Specialised Areas — Chapter 8","Related Services — Chapter 9","Review Engagements — Chapter 10","Prospective Financial Information (PFI) and Other Assurance Engagements — Chapter 11","Digital Audit — Chapter 12","Group Audit (SA 600) — Chapter 13","Bank Audit — Chapter 14A","NBFC Audit — Chapter 14B","Public Sector Undertaking (PSU) Audit — Chapter 15","Internal Audit — Chapter 16","Due Diligence — Chapter 17A","Fraud Investigation — Chapter 17B","Forensic Audit — Chapter 17C","Sustainable Development Goals (SDG) and Environmental, Social and Governance (ESG) — Chapter 18","Professional Ethics — Chapter 19"],"DT":["Chapter 1 — Profits and Gains from Business & Profession (PGBP)","Chapter 2 — Taxation of Various Entities","Chapter 3 — Profit-Linked Deductions","Chapter 4 — Minimum Alternate Tax (MAT)","Chapter 5 — Alternate Minimum Tax (AMT)","Chapter 6 — Assessment Procedure","Chapter 7 — Rectification of Apparent Mistakes","Chapter 8 — Appeals and Revision","Chapter 9 — Important Time Limits for Assessments","Chapter 10 — Penalties","Chapter 11 — Dispute Resolution Committee (DRC)","Chapter 12 — Set-off and Carry Forward of Losses","Chapter 13 — Taxation of Investment Funds (AIF Category I & II)","Chapter 14 — Taxation of Securitisation Trusts","Chapter 15 — Tax Deducted at Source (TDS) / Tax Collected at Source (TCS)","Chapter 16 — Virtual Digital Assets (VDA)","Chapter 17 — Capital Gains","Chapter 18 — Income from Other Sources (IFOS)","Chapter 19 — Deduction under Section 10AA","Chapter 20 — Taxation of Mutual Funds","Chapter 21 — Advance Tax","Chapter 22 — Updated Return","Chapter 23 — Dividend Stripping and Bonus Stripping","Chapter 24 — Taxation of Trusts and Exit Tax","Chapter 25 — Alternative Tax Regimes","Chapter 26 — Chapter VI-A Deductions","Chapter 27 — Tax Audit and Ethical Practice","Chapter 28 — Non-Resident Taxation","Chapter 29 — Business Trusts","Chapter 30 — Double Taxation Avoidance Agreements (DTAA)","Chapter 31 — Transfer Pricing","Chapter 32 — Advance Ruling","Chapter 33 — Compounding of Offences","Chapter 34 — General Anti-Avoidance Rules (GAAR)","Chapter 35 — Vodafone Case Law and Its Effects","Chapter 36 — Application vs Diversion of Income by Overriding Title","Chapter 37 — Overview of Model Tax Convention","Chapter 38 — Application and Interpretation of Tax Treaties","Chapter 39 — Base Erosion and Profit Shifting (BEPS)","Chapter 40 — Tonnage Taxation","Chapter 41 — Miscellaneous Amendments","Chapter 42 — Statement of Financial Transactions (SFT) and Reportable Accounts","Chapter 43 — Tax Rates","Chapter 44 — Black Money Law","Chapter 45 — Case Laws","Chapter 46 — Latest Developments in International Taxation"],"IDT":["Ch1 Introduction","Ch2 Supply under GST","Ch3 Charges of GST","Ch4 Time of supply","Ch5 Exemptions","Ch6 Value of supply","Ch7 Input tax credit","Ch8 Place of supply","Ch9 E-commerce transaction","Ch10 Registration","Ch11 Tax invoice debit & credit note","Ch12 Payment of tax","Ch13 TDS & TCS","Ch14 Accounts, Records & E-way bills","Ch15 Returns","Ch16 Imports & Exports","Ch17 Refunds","Ch18 Job work","Ch19 Customs duty","Ch20 Assessment & Audit","Ch21 Advance ruling","Ch22 Inspection, search & seizure","Ch23 Demands & Recovery","Ch24 Appeals & Revision","Ch25 Offenses & Penalties","Ch26 Warehousing","Ch27 Refunds & FTP"]};
+
+const SUBJ_COLORS = {FR:'#4A9EFF',AFM:'#2ECC71',Audit:'#F39C12',DT:'#E74C3C',IDT:'#9B59B6'};
+const RECALL_DAYS = [1,3,7,14,30,60];
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let S = {
+  tab: 'home',
+  modal: null,        // null | 'add' | 'settings' | 'interval'
+  modalData: null,
+  recallSubject: 'ALL',
+  recallView: 'today', // 'today' | 'all'
+
+  // Persisted
+  sessions: [],       // [{id,date,subject,chapter,revision,hours}]
+  recalls: {},        // "FR|chap": {r1,r3,r7,r14,r30,r60}
+  settings: {
+    userCode: '',
+    studyStartDate: '2026-06-26',
+    dailyTargetHours: 12,
+    examDate: '2026-11-01',
+    rev1EndDate: '2026-08-30',
+    rev2EndDate: '2026-10-15',
+  },
+
+  // Sync
+  syncStatus: 'idle', // idle|busy|ok|err
+  dirty: false,
+};
+
+let syncTimer = null;
+
+// ════════════════════════════════════════════════════════
+// PERSISTENCE
+// ════════════════════════════════════════════════════════
+function saveLocal(){
+  try{
+    localStorage.setItem('ca_tracker_v2', JSON.stringify({
+      sessions:S.sessions, recalls:S.recalls, settings:S.settings
+    }));
+  }catch(e){}
+}
+
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem('ca_tracker_v2');
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d.sessions) S.sessions = d.sessions;
+    if(d.recalls)  S.recalls  = d.recalls;
+    if(d.settings) S.settings = {...S.settings, ...d.settings};
+  }catch(e){}
+}
+
+async function syncUp(){
+  if(!S.settings.userCode) return;
+  S.syncStatus = 'busy'; renderHeader();
+  try{
+    const res = await fetch('/api/data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-User-Code':S.settings.userCode},
+      body:JSON.stringify({sessions:S.sessions,recalls:S.recalls,settings:S.settings})
+    });
+    S.syncStatus = res.ok ? 'ok' : 'err';
+    S.dirty = false;
+  }catch(e){ S.syncStatus='err'; }
+  renderHeader();
+}
+
+async function syncDown(){
+  if(!S.settings.userCode) return;
+  S.syncStatus = 'busy'; renderHeader();
+  try{
+    const res = await fetch('/api/data',{headers:{'X-User-Code':S.settings.userCode}});
+    if(res.ok){
+      const d = await res.json();
+      if(d.sessions) S.sessions = d.sessions;
+      if(d.recalls)  S.recalls  = d.recalls;
+      if(d.settings) S.settings = {...S.settings, ...d.settings};
+      saveLocal();
+      S.syncStatus = 'ok';
+    } else { S.syncStatus = 'err'; }
+  }catch(e){ S.syncStatus='err'; }
+  render();
+}
+
+function scheduleSave(){
+  saveLocal();
+  S.dirty = true;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncUp, 3000);
+}
+
+// ════════════════════════════════════════════════════════
+// COMPUTED HELPERS
+// ════════════════════════════════════════════════════════
+const today = () => new Date().toISOString().slice(0,10);
+
+function addDays(dateStr, n){
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0,10);
+}
+
+function fmtDate(dateStr){
+  if(!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+}
+
+function daysBetween(a, b){
+  return Math.round((new Date(b)-new Date(a)) / 86400000);
+}
+
+function getFirstStudied(subj, chap){
+  const matches = S.sessions.filter(s=>s.subject===subj&&s.chapter===chap);
+  if(!matches.length) return null;
+  return matches.map(s=>s.date).sort()[0];
+}
+
+function getRecallStatus(subj, chap){
+  return S.recalls[`${subj}|${chap}`] || {};
+}
+
+function getRecallDates(studyDate){
+  return RECALL_DAYS.map(d=>addDays(studyDate,d));
+}
+
+function getTodayQueue(){
+  const td = today();
+  const queue = [];
+  Object.entries(CHAPTERS).forEach(([subj, chapters])=>{
+    chapters.forEach(chap=>{
+      const sd = getFirstStudied(subj,chap);
+      if(!sd) return;
+      const rs = getRecallStatus(subj,chap);
+      const dates = getRecallDates(sd);
+      RECALL_DAYS.forEach((days,i)=>{
+        const key = `r${days}`;
+        const date = dates[i];
+        if(date <= td && !['Recalled ✓','Skipped'].includes(rs[key])){
+          queue.push({subj,chap,sd,days,date,key,status:rs[key]||null});
+        }
+      });
+    });
+  });
+  return queue.sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function getTodayHours(){
+  const td = today();
+  return S.sessions.filter(s=>s.date===td).reduce((sum,s)=>sum+s.hours,0);
+}
+
+function getSubjectStats(subj){
+  const chapters = CHAPTERS[subj];
+  const studiedChapters = chapters.filter(c=>getFirstStudied(subj,c));
+  const totalHours = S.sessions.filter(s=>s.subject===subj).reduce((sum,s)=>sum+s.hours,0);
+  const recalledAll = chapters.filter(c=>{
+    const rs = getRecallStatus(subj,c);
+    return RECALL_DAYS.every(d=>rs[`r${d}`]==='Recalled ✓');
+  });
+  return {studied:studiedChapters.length, total:chapters.length, hours:totalHours, mastered:recalledAll.length};
+}
+
+function getPace(endDate){
+  const td = today();
+  if(!endDate || endDate <= td) return null;
+  const daysLeft = daysBetween(td, endDate);
+  const totalAllotted = S.sessions.reduce((s,x)=>s+x.hours,0); // simple: hours logged so far
+  const hoursLeft = Math.max(0, S.settings.dailyTargetHours * daysLeft);
+  const neededPerDay = hoursLeft / daysLeft;
+  return {daysLeft, neededPerDay: neededPerDay.toFixed(1), target: S.settings.dailyTargetHours};
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER ENGINE
+// ════════════════════════════════════════════════════════
+function render(){
+  document.getElementById('app').innerHTML = `
+    ${renderHeader()}
+    <main id="main">${renderTab()}</main>
+    ${renderBottomNav()}
+    ${S.modal ? renderModal() : ''}
+  `;
+  bind();
+}
+
+function renderHeader(){
+  const syncIcon = S.syncStatus==='busy'? '⌛' : S.settings.userCode ? (S.syncStatus==='ok'?'☁️':'☁️') : '—';
+  const dotClass = S.settings.userCode ? S.syncStatus : '';
+  return `<header>
+    <div class="logo">CA <span>Final</span> Tracker</div>
+    <div class="hdr-right">
+      <span style="font-size:12px;color:var(--muted)">${fmtDate(today())}</span>
+      <div class="sync-dot ${dotClass}" title="Sync status"></div>
+      <button class="icon-btn" id="btn-settings">⚙️</button>
+    </div>
+  </header>`;
+}
+function renderHeader_only(){
+  // just refresh the header without full re-render
+  const h = document.querySelector('header');
+  if(h){ const t=document.createElement('div'); t.innerHTML=renderHeader(); h.replaceWith(t.firstChild); bind_header(); }
+}
+
+function renderBottomNav(){
+  const tabs=[
+    {id:'home',label:'Home',icon:'🏠'},
+    {id:'log', label:'Log',icon:'📝'},
+    {id:'recall',label:'Recall',icon:'🧠'},
+    {id:'progress',label:'Progress',icon:'📈'},
+  ];
+  return `<nav class="bnav">${tabs.map(t=>`
+    <button class="bnav-btn${S.tab===t.id?' active':''}" data-tab="${t.id}">
+      <span class="ni">${t.icon}</span>
+      <span>${t.label}</span>
+    </button>`).join('')}</nav>`;
+}
+
+function renderTab(){
+  if(S.tab==='home')     return renderHome();
+  if(S.tab==='log')      return renderLog();
+  if(S.tab==='recall')   return renderRecall();
+  if(S.tab==='progress') return renderProgress();
+  return '';
+}
+
+// ── HOME ──────────────────────────────────────────────────────
+function renderHome(){
+  const td = today();
+  const todayH = getTodayHours();
+  const target = S.settings.dailyTargetHours;
+  const pct = Math.min(100, (todayH/target)*100);
+  const queue = getTodayQueue();
+  const streak = getStreak();
+  const p1 = getPace(S.settings.rev1EndDate);
+  const p2 = getPace(S.settings.rev2EndDate);
+  const totalStudied = Object.keys(CHAPTERS).reduce((sum,s)=>sum+CHAPTERS[s].filter(c=>getFirstStudied(s,c)).length,0);
+
+  return `
+  <div class="today-card" style="margin-top:12px">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px">TODAY'S STUDY HOURS</div>
+    <div class="today-hours">${todayH.toFixed(1)}<span style="font-size:20px;color:var(--muted)">/${target}h</span></div>
+    <div class="progress-track" style="margin-top:12px">
+      <div class="progress-fill" style="width:${pct}%;background:${pct>=100?'var(--success)':'var(--primary)'}"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)">
+      <span>📚 ${totalStudied}/146 chapters started</span>
+      <span>🔥 ${streak} day streak</span>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--warn)">${queue.length}</div>
+      <div class="stat-label">🧠 Due for Recall</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--success)">${getTodaySessionCount()}</div>
+      <div class="stat-label">📝 Sessions Today</div>
+    </div>
+  </div>
+
+  ${p1 ? `
+  <div class="pace-bar">
+    <div class="pace-info">
+      <div class="pace-title">1st Revision Pace</div>
+      <div class="pace-sub">${p1.daysLeft} days left → need ${p1.neededPerDay}h/day</div>
+    </div>
+    <div class="badge ${p1.neededPerDay<=p1.target?'ok':'err'}">${p1.neededPerDay<=p1.target?'On Track':'Behind'}</div>
+  </div>` : ''}
+
+  ${p2 ? `
+  <div class="pace-bar">
+    <div class="pace-info">
+      <div class="pace-title">2nd Revision Pace</div>
+      <div class="pace-sub">${p2.daysLeft} days left → need ${p2.neededPerDay}h/day</div>
+    </div>
+    <div class="badge ${p2.neededPerDay<=p2.target?'ok':'err'}">${p2.neededPerDay<=p2.target?'On Track':'Behind'}</div>
+  </div>` : ''}
+
+  ${queue.length ? `
+  <p class="section-title">🔴 Recall Due Now</p>
+  <div style="padding:0 16px">
+    ${queue.slice(0,3).map(q=>recallItemHTML(q)).join('')}
+    ${queue.length>3?`<div style="text-align:center;padding:10px;color:var(--primary);font-size:14px;font-weight:600" id="see-all-recall">+${queue.length-3} more — tap Recall tab →</div>`:''}
+  </div>` : `
+  <div class="card" style="text-align:center;color:var(--muted);padding:20px">
+    <div style="font-size:32px">✅</div>
+    <div style="font-size:14px;margin-top:8px">No recall due today! Keep studying.</div>
+  </div>`}
+
+  ${!S.settings.userCode ? `
+  <p class="section-title">☁️ Cloud Sync</p>
+  <div class="sync-card">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Set a sync code to access your data from any device</div>
+    <button class="btn btn-primary" style="padding:10px" id="btn-set-code">Set Sync Code</button>
+  </div>` : `
+  <p class="section-title">☁️ Sync Code</p>
+  <div class="sync-card">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Your code — use on any device to access your data</div>
+    <div class="code-display">${S.settings.userCode}</div>
+  </div>`}
+  <div style="height:8px"></div>`;
+}
+
+function getTodaySessionCount(){
+  return S.sessions.filter(s=>s.date===today()).length;
+}
+function getStreak(){
+  let streak=0,d=new Date();
+  while(true){
+    const ds=d.toISOString().slice(0,10);
+    if(S.sessions.some(s=>s.date===ds)) streak++;
+    else if(ds!==today()) break;
+    d.setDate(d.getDate()-1);
+    if(streak>365) break;
+  }
+  return streak;
+}
+
+// ── LOG ────────────────────────────────────────────────────────
+function renderLog(){
+  const td = today();
+  const recent = [...S.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,30);
+  const byDate = {};
+  recent.forEach(s=>{ (byDate[s.date]=byDate[s.date]||[]).push(s); });
+
+  return `
+  <div style="padding:12px 16px 0">
+    <button class="btn btn-primary" id="btn-add-log" style="font-size:15px">＋ Log Study Session</button>
+  </div>
+  ${Object.entries(byDate).map(([date, sessions])=>`
+    <p class="section-title">${date===td?'Today':fmtDate(date)} — ${sessions.reduce((s,x)=>s+x.hours,0).toFixed(1)}h</p>
+    <div class="card" style="padding:4px 16px">
+      ${sessions.map(s=>`
+        <div class="log-item">
+          <div class="subj-dot" style="background:${SUBJ_COLORS[s.subject]}"></div>
+          <div class="log-main">
+            <div class="log-chap">${s.chapter}</div>
+            <div class="log-meta">${s.subject} · ${s.revision} rev</div>
+          </div>
+          <div class="log-hrs">${s.hours.toFixed(1)}h</div>
+          <button class="icon-btn" style="font-size:16px;color:var(--muted)" data-del="${s.id}">🗑</button>
+        </div>`).join('')}
+    </div>`).join('') || `
+    <div class="empty">
+      <div class="empty-icon">📝</div>
+      <div class="empty-text">No sessions yet</div>
+      <div class="empty-sub">Tap + to log your first study session</div>
+    </div>`}
+  <div style="height:80px"></div>`;
+}
+
+// ── RECALL ─────────────────────────────────────────────────────
+function renderRecall(){
+  const queue = getTodayQueue();
+  const subjects = ['ALL',...Object.keys(CHAPTERS)];
+
+  return `
+  <div style="padding:12px 16px 0;display:flex;gap:8px">
+    <button class="btn ${S.recallView==='today'?'btn-primary':'btn-ghost'}" style="flex:1;padding:10px" data-view="today">📋 Due Today (${queue.length})</button>
+    <button class="btn ${S.recallView==='all'?'btn-primary':'btn-ghost'}" style="flex:1;padding:10px" data-view="all">📚 All Chapters</button>
+  </div>
+
+  ${S.recallView==='today' ? renderRecallToday(queue) : renderRecallAll()}`;
+}
+
+function renderRecallToday(queue){
+  if(!queue.length) return `
+    <div class="empty" style="padding-top:60px">
+      <div class="empty-icon">🎉</div>
+      <div class="empty-text">All caught up!</div>
+      <div class="empty-sub">No recall due today. Check back tomorrow.</div>
+    </div>`;
+  return `
+  <p class="section-title">RECALL QUEUE — ${queue.length} chapters</p>
+  <div style="padding:0 16px">${queue.map(q=>recallItemHTML(q)).join('')}</div>
+  <div style="height:20px"></div>`;
+}
+
+function recallItemHTML(q){
+  const td = today();
+  const overdue = q.date < td;
+  const days = overdue ? daysBetween(q.date,td) : 0;
+  const rs = getRecallStatus(q.subj,q.chap);
+  const current = rs[q.key];
+  return `<div class="recall-item">
+    <div class="recall-hdr">
+      <div class="subj-dot" style="background:${SUBJ_COLORS[q.subj]}"></div>
+      <div class="recall-chap">${q.chap}</div>
+      <div class="recall-days ${overdue?'days-over':'days-due'}">+${q.days}d</div>
+    </div>
+    <div class="recall-meta">${q.subj} · Studied ${fmtDate(q.sd)}${overdue?` · ${days}d overdue`:' · Due today'}</div>
+    <div class="recall-btns">
+      <button class="recall-btn ${current==='Recalled ✓'?'active-recalled':'recalled'}"
+        data-recall="${q.subj}|${encodeURIComponent(q.chap)}|${q.key}|Recalled ✓">✓ Recalled</button>
+      <button class="recall-btn ${current==='Skipped'?'active-skipped':'skipped'}"
+        data-recall="${q.subj}|${encodeURIComponent(q.chap)}|${q.key}|Skipped">✗ Skip</button>
+    </div>
+  </div>`;
+}
+
+function renderRecallAll(){
+  const filt = S.recallSubject;
+  const subjects = Object.keys(CHAPTERS);
+  const td = today();
+
+  return `
+  <div style="padding:10px 0 0">
+    <div class="subj-filter">
+      ${['ALL',...subjects].map(s=>`
+        <button class="subj-pill" data-sf="${s}"
+          style="background:${filt===s?(s==='ALL'?'var(--primary)':SUBJ_COLORS[s]):'var(--card2)'};
+                 color:${filt===s?'#fff':'var(--muted)'}">
+          ${s==='ALL'?'All':s}
+        </button>`).join('')}
+    </div>
+  </div>
+  <div style="padding:0 16px;margin-top:8px">
+    ${(filt==='ALL'?subjects:[filt]).map(subj=>
+      CHAPTERS[subj].map(chap=>{
+        const sd = getFirstStudied(subj,chap);
+        const rs = getRecallStatus(subj,chap);
+        if(!sd) return `<div class="tracker-chapter" style="opacity:.4">
+          <div class="tracker-hdr">
+            <div class="subj-dot" style="background:${SUBJ_COLORS[subj]}"></div>
+            <div class="tracker-chap">${chap}</div>
+            <div class="tracker-progress" style="color:var(--muted)">Not started</div>
+          </div>
+        </div>`;
+        const dates = getRecallDates(sd);
+        const done = RECALL_DAYS.filter(d=>rs[`r${d}`]==='Recalled ✓').length;
+        return `<div class="tracker-chapter">
+          <div class="tracker-hdr">
+            <div class="subj-dot" style="background:${SUBJ_COLORS[subj]}"></div>
+            <div class="tracker-chap">${chap}</div>
+            <div class="tracker-progress">${done}/6</div>
+          </div>
+          <div class="recall-intervals">
+            ${RECALL_DAYS.map((days,i)=>{
+              const key=`r${days}`;const date=dates[i];const st=rs[key];
+              let cls,label;
+              if(st==='Recalled ✓'){cls='chip-done';label=`✓+${days}d`;}
+              else if(st==='Skipped'){cls='chip-skip';label=`–+${days}d`;}
+              else if(date<td){cls='chip-over';label=`!+${days}d`;}
+              else if(date===td){cls='chip-due';label=`▶+${days}d`;}
+              else{cls='chip-future';label=`+${days}d`;}
+              return `<button class="interval-chip ${cls}"
+                data-ic="${subj}|${encodeURIComponent(chap)}|${key}|${date}">${label}</button>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('')
+    ).join('')}
+  </div>
+  <div style="height:20px"></div>`;
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────
+function renderProgress(){
+  const td = today();
+  const totalH = S.sessions.reduce((s,x)=>s+x.hours,0);
+  const daysStudied = [...new Set(S.sessions.map(s=>s.date))].length;
+  const avgH = daysStudied ? (totalH/daysStudied).toFixed(1) : 0;
+
+  return `
+  <div class="stat-grid" style="padding-top:12px">
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--primary)">${totalH.toFixed(1)}h</div>
+      <div class="stat-label">Total Hours</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--success)">${avgH}h</div>
+      <div class="stat-label">Avg / Day</div>
+    </div>
+  </div>
+  <p class="section-title">SUBJECT BREAKDOWN</p>
+  ${Object.keys(CHAPTERS).map(subj=>{
+    const st=getSubjectStats(subj);
+    const pct=Math.round((st.studied/st.total)*100);
+    const rPct=Math.round((st.mastered/st.total)*100);
+    return `<div class="prog-subj">
+      <div class="prog-hdr">
+        <div class="subj-dot" style="background:${SUBJ_COLORS[subj]};width:12px;height:12px"></div>
+        <div class="prog-name">${subj}</div>
+        <div style="font-size:13px;color:var(--primary);font-weight:700">${st.hours.toFixed(1)}h logged</div>
+      </div>
+      <div class="prog-stats">
+        <div class="prog-stat"><div class="prog-stat-val" style="color:var(--primary)">${st.studied}</div><div class="prog-stat-lbl">Studied</div></div>
+        <div class="prog-stat"><div class="prog-stat-val" style="color:var(--success)">${st.mastered}</div><div class="prog-stat-lbl">Mastered</div></div>
+        <div class="prog-stat"><div class="prog-stat-val" style="color:var(--muted)">${st.total}</div><div class="prog-stat-lbl">Total</div></div>
+      </div>
+      <div class="prog-row"><span>Chapters studied</span><span style="color:var(--primary)">${pct}%</span></div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${pct}%;background:${SUBJ_COLORS[subj]}"></div></div>
+      <div class="prog-row" style="margin-top:8px"><span>Recall mastered</span><span style="color:var(--success)">${rPct}%</span></div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${rPct}%;background:var(--success)"></div></div>
+    </div>`;
+  }).join('')}
+  <div style="height:20px"></div>`;
+}
+
+// ── MODALS ─────────────────────────────────────────────────────
+function renderModal(){
+  if(S.modal==='add')      return renderAddModal();
+  if(S.modal==='settings') return renderSettingsModal();
+  if(S.modal==='interval') return renderIntervalModal();
+  return '';
+}
+
+function renderAddModal(){
+  const d = S.modalData || {subject:'FR',chapter:'',revision:'1st',hours:'',date:today()};
+  const chapters = CHAPTERS[d.subject]||[];
+  return `<div class="overlay" id="overlay">
+    <div class="sheet">
+      <div class="sheet-title">📝 Log Study Session</div>
+      <div class="field"><label>Date</label>
+        <input type="date" id="f-date" value="${d.date}"></div>
+      <div class="field"><label>Subject</label>
+        <select id="f-subj">${Object.keys(CHAPTERS).map(s=>`<option${s===d.subject?' selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="field"><label>Chapter / Topic</label>
+        <select id="f-chap"><option value="">-- Select Chapter --</option>${chapters.map(c=>`<option${c===d.chapter?' selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>Revision</label>
+        <select id="f-rev"><option${d.revision==='1st'?' selected':''}>1st</option><option${d.revision==='2nd'?' selected':''}>2nd</option></select></div>
+      <div class="field"><label>Hours Studied (e.g. 2.5)</label>
+        <input type="number" id="f-hrs" step="0.25" min="0.25" max="24" value="${d.hours}" placeholder="0.0"></div>
+      <button class="btn btn-primary" id="btn-save-log">Save Session</button>
+      <button class="btn btn-ghost" id="btn-close-modal">Cancel</button>
+    </div>
+  </div>`;
+}
+
+function renderSettingsModal(){
+  const s = S.settings;
+  return `<div class="overlay" id="overlay">
+    <div class="sheet">
+      <div class="sheet-title">⚙️ Settings</div>
+      <div class="card" style="margin:0 0 16px;padding:14px">
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">Sync Code</div><div class="settings-sub">Access your data from any device</div></div>
+          <input class="settings-input" id="s-code" placeholder="e.g. CAFINAL26" value="${s.userCode}" style="width:140px">
+        </div>
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">Study Start Date</div></div>
+          <input class="settings-input" type="date" id="s-start" value="${s.studyStartDate}">
+        </div>
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">Daily Target (hrs)</div></div>
+          <input class="settings-input" type="number" id="s-target" step="0.5" value="${s.dailyTargetHours}" style="width:80px">
+        </div>
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">1st Rev End Date</div></div>
+          <input class="settings-input" type="date" id="s-rev1" value="${s.rev1EndDate}">
+        </div>
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">2nd Rev End Date</div></div>
+          <input class="settings-input" type="date" id="s-rev2" value="${s.rev2EndDate}">
+        </div>
+        <div class="settings-item">
+          <div class="settings-label"><div class="settings-title">Exam Date</div></div>
+          <input class="settings-input" type="date" id="s-exam" value="${s.examDate}">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-save-settings">Save & Sync</button>
+      <button class="btn btn-ghost" style="margin-top:8px" id="btn-close-modal">Close</button>
+      <button class="btn btn-danger" style="margin-top:8px;background:none;color:var(--danger);border:1.5px solid var(--danger)" id="btn-clear-data">⚠️ Clear All Data</button>
+    </div>
+  </div>`;
+}
+
+function renderIntervalModal(){
+  const {subj,chap,key,date} = S.modalData;
+  const rs = getRecallStatus(subj,chap);
+  const current = rs[key];
+  const days = key.replace('r','');
+  const td = today();
+  const overdue = date < td;
+  return `<div class="overlay" id="overlay">
+    <div class="sheet">
+      <div class="sheet-title">🧠 Mark Recall</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:4px">+${days} day recall</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px">${chap}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">${subj} · Due ${fmtDate(date)}${overdue?' (overdue)':''}</div>
+      <button class="btn btn-primary" style="background:var(--success);margin-bottom:8px" data-mark="Recalled ✓">✓ Recalled it!</button>
+      <button class="btn btn-ghost" style="color:var(--muted)" data-mark="Skipped">✗ Skipped</button>
+      ${current ? `<button class="btn btn-ghost" style="margin-top:8px;color:var(--muted)" data-mark="__clear">↩ Clear status</button>` : ''}
+      <button class="btn btn-ghost" style="margin-top:8px" id="btn-close-modal">Cancel</button>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// EVENT BINDING
+// ════════════════════════════════════════════════════════
+function bind(){
+  // Bottom nav
+  document.querySelectorAll('[data-tab]').forEach(el=>{
+    el.addEventListener('click',()=>{ S.tab=el.dataset.tab; render(); });
+  });
+  bind_header();
+  // Log tab
+  el('btn-add-log')?.addEventListener('click',()=>{ S.modal='add'; S.modalData={subject:'FR',chapter:'',revision:'1st',hours:'',date:today()}; render(); });
+  document.querySelectorAll('[data-del]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      S.sessions=S.sessions.filter(s=>s.id!==el.dataset.del);
+      scheduleSave(); render();
+    });
+  });
+  // Recall view toggle
+  document.querySelectorAll('[data-view]').forEach(el=>{
+    el.addEventListener('click',()=>{ S.recallView=el.dataset.view; render(); });
+  });
+  // Subject filter
+  document.querySelectorAll('[data-sf]').forEach(el=>{
+    el.addEventListener('click',()=>{ S.recallSubject=el.dataset.sf; render(); });
+  });
+  // Recall buttons in queue
+  document.querySelectorAll('[data-recall]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const [subj,chapEnc,key,status]=el.dataset.recall.split('|');
+      const chap=decodeURIComponent(chapEnc);
+      const rk=`${subj}|${chap}`;
+      if(!S.recalls[rk]) S.recalls[rk]={};
+      S.recalls[rk][key]=status;
+      scheduleSave(); render();
+    });
+  });
+  // Interval chips
+  document.querySelectorAll('[data-ic]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const [subj,chapEnc,key,date]=el.dataset.ic.split('|');
+      const chap=decodeURIComponent(chapEnc);
+      S.modal='interval'; S.modalData={subj,chap,key,date}; render();
+    });
+  });
+  // See all recall
+  el('see-all-recall')?.addEventListener('click',()=>{ S.tab='recall'; S.recallView='today'; render(); });
+  // Set code button
+  el('btn-set-code')?.addEventListener('click',()=>{ S.modal='settings'; render(); });
+  // Modal
+  bindModal();
+}
+
+function bind_header(){
+  el('btn-settings')?.addEventListener('click',()=>{ S.modal='settings'; render(); });
+}
+
+function bindModal(){
+  // Close overlay
+  el('overlay')?.addEventListener('click',e=>{ if(e.target.id==='overlay'){ S.modal=null; render(); } });
+  el('btn-close-modal')?.addEventListener('click',()=>{ S.modal=null; render(); });
+
+  // Subject change → update chapter list
+  el('f-subj')?.addEventListener('change',()=>{
+    const subj=el('f-subj').value;
+    S.modalData={...S.modalData,subject:subj,chapter:''};
+    render();
+  });
+
+  // Save log
+  el('btn-save-log')?.addEventListener('click',()=>{
+    const date=el('f-date')?.value;
+    const subject=el('f-subj')?.value;
+    const chapter=el('f-chap')?.value;
+    const revision=el('f-rev')?.value;
+    const hours=parseFloat(el('f-hrs')?.value);
+    if(!chapter){ toast('Pick a chapter','err'); return; }
+    if(!hours||hours<=0){ toast('Enter hours','err'); return; }
+    S.sessions.push({id:Date.now().toString(),date,subject,chapter,revision,hours});
+    S.modal=null;
+    scheduleSave();
+    toast('Session logged ✓');
+    render();
+  });
+
+  // Save settings
+  el('btn-save-settings')?.addEventListener('click',()=>{
+    const code=(el('s-code')?.value||'').trim().toUpperCase();
+    S.settings.userCode = code;
+    S.settings.studyStartDate = el('s-start')?.value || S.settings.studyStartDate;
+    S.settings.dailyTargetHours = parseFloat(el('s-target')?.value||12);
+    S.settings.rev1EndDate = el('s-rev1')?.value || S.settings.rev1EndDate;
+    S.settings.rev2EndDate = el('s-rev2')?.value || S.settings.rev2EndDate;
+    S.settings.examDate = el('s-exam')?.value || S.settings.examDate;
+    S.modal=null;
+    scheduleSave();
+    if(code) syncDown();
+    else render();
+    toast('Settings saved ✓');
+  });
+
+  // Clear data
+  el('btn-clear-data')?.addEventListener('click',()=>{
+    if(confirm('Delete ALL data? This cannot be undone.')){
+      S.sessions=[]; S.recalls={};
+      scheduleSave(); S.modal=null; render();
+      toast('Data cleared');
+    }
+  });
+
+  // Interval modal mark
+  document.querySelectorAll('[data-mark]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const {subj,chap,key}=S.modalData;
+      const status=btn.dataset.mark;
+      const rk=`${subj}|${chap}`;
+      if(!S.recalls[rk]) S.recalls[rk]={};
+      if(status==='__clear') delete S.recalls[rk][key];
+      else S.recalls[rk][key]=status;
+      scheduleSave(); S.modal=null;
+      toast(status==='Recalled ✓'?'Marked Recalled ✓':'Skipped');
+      render();
+    });
+  });
+}
+
+function el(id){ return document.getElementById(id); }
+
+function toast(msg, type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type==='err'?' err-toast':'');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.className='toast',2200);
+}
+
+// ════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════
+loadLocal();
+render();
+if(S.settings.userCode) syncDown();
+</script>
+</body>
+</html>
