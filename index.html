@@ -139,6 +139,24 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .rev-fi{height:100%;border-radius:3px;transition:width .4s}
 /* CHART */
 .chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;margin:7px 13px 0;overflow:hidden}
+/* RECENT DAYS COMPARISON TABLE */
+.cmp-wrap{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:11px 10px;margin:7px 13px 0;overflow-x:auto}
+.cmp-table{width:100%;border-collapse:collapse;min-width:330px}
+.cmp-table th{text-align:center;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.3px;font-size:9px;padding:0 4px 8px}
+.cmp-table th:first-child{text-align:left}
+.cmp-table td{padding:8px 4px;border-top:1px solid var(--border);font-weight:700;font-size:12px;text-align:center}
+.cmp-table td:first-child{text-align:left}
+.cmp-day{font-size:12px;font-weight:800;color:var(--text)}
+.cmp-date{font-size:9px;color:var(--muted);font-weight:600;margin-top:1px}
+/* COMPLETION LIKELIHOOD CARD */
+.like-row{padding:11px 0;border-bottom:1px solid var(--border)}
+.like-row:last-child{border:none}
+.like-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.like-title{font-size:12px;font-weight:800}
+.like-badge{padding:4px 11px;border-radius:20px;font-size:13px;font-weight:900}
+.like-detail{font-size:10px;color:var(--muted);line-height:1.5}
+.like-track{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:6px}
+.like-fill{height:100%;border-radius:3px;transition:width .4s}
 .chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:var(--muted);margin-bottom:9px}
 .chart-legend span{display:flex;align-items:center;gap:4px}
 .avg-row{display:flex;gap:6px;margin-top:8px}
@@ -427,6 +445,29 @@ function getPace(endDate,rev){
   const rem=Math.max(0,allH-logH);
   return{days,needed:(rem/days).toFixed(1),target:S.settings.dailyTargetHours,rem,allH,logH};
 }
+// Projects whether the revision will finish on time, using the average NET
+// (productive) hours/day from the last few days. pct = what % of the
+// remaining work would get done by the deadline at this pace — NOT a
+// statistical probability, just a transparent linear projection.
+function getCompletionLikelihood(endDate,rev){
+  const td=today();if(!endDate||endDate<=td)return null;
+  const daysLeft=dBetween(td,endDate);
+  const allH=Object.keys(CHAPTERS).reduce((s,k)=>s+sAll(k,rev),0);
+  const logH=Object.keys(CHAPTERS).reduce((s,k)=>s+sLog(k,rev),0);
+  const rem=Math.max(0,allH-logH);
+  if(rem<=0)return{pct:100,rem:0,daysLeft,avgPace:0,windowDays:0,done:true};
+  const start=S.settings.studyStartDate||td;
+  const daysSinceStart=Math.max(1,dBetween(start,td)+1);
+  const windowDays=Math.max(1,Math.min(7,daysSinceStart));
+  let sumNet=0;
+  for(let i=0;i<windowDays;i++)sumNet+=calcDayEff(addDays(td,-i)).netH;
+  const avgPace=sumNet/windowDays;
+  const achievable=avgPace*daysLeft;
+  const rawPct=avgPace>0?Math.round(achievable/rem*100):0;
+  const daysNeeded=avgPace>0?Math.ceil(rem/avgPace):null;
+  const bufferDays=daysNeeded!=null?daysLeft-daysNeeded:null; // +ve = finishing early, -ve = short by this many days
+  return{pct:rawPct,rem,daysLeft,avgPace,windowDays,daysNeeded,bufferDays,done:false};
+}
 function gfs(s,c){const m=S.sessions.filter(x=>x.subject===s&&x.chapter===c);return m.length?m.map(x=>x.date).sort()[0]:null;}
 function grs(s,c){return S.recalls[s+'|'+c]||{};}
 function rDates(sd){return RD.map(d=>addDays(sd,d));}
@@ -646,6 +687,13 @@ function rProgress(){
     </div>
   </div>
 
+  <!-- LAST 3 DAYS COMPARISON -->
+  <div class="stitle">Last 3 Days</div>
+  ${rRecentTable()}
+
+  <!-- COMPLETION LIKELIHOOD -->
+  ${rLikelihoodCard()}
+
   <!-- DAY EFFICIENCY CHART -->
   ${rEffChart()}
 
@@ -673,6 +721,71 @@ function rProgress(){
       </div>
     </div>`;
   }).join('')}<div style="height:16px"></div>`;
+}
+
+// ─── RECENT 3-DAY COMPARISON TABLE ────────────────
+function rRecentTable(){
+  const td=today();
+  const defs=[{l:'Today',n:0},{l:'Yesterday',n:1},{l:'2 Days Ago',n:2}];
+  const rows=defs.map(d=>{
+    const date=addDays(td,-d.n);
+    const e=calcDayEff(date);
+    const idleH=e.intIdleH+e.gapH+e.uncoveredH;
+    const diff=e.netH-idleH;
+    return{label:d.l,date,total:e.slotH,net:e.netH,idleH,diff,eff:e.effPct};
+  });
+  return`<div class="cmp-wrap">
+    <table class="cmp-table">
+      <thead><tr><th>Day</th><th>Total</th><th>Net</th><th>Idle</th><th>Net−Idle</th><th>Eff%</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td><div class="cmp-day">${r.label}</div><div class="cmp-date">${fmtDate(r.date)}</div></td>
+        <td style="color:var(--text)">${r.total.toFixed(1)}h</td>
+        <td style="color:var(--green)">${r.net.toFixed(1)}h</td>
+        <td style="color:var(--amber)">${r.idleH.toFixed(1)}h</td>
+        <td style="color:${r.diff>=0?'var(--green)':'var(--red)'}">${r.diff>=0?'+':''}${r.diff.toFixed(1)}h</td>
+        <td style="color:${r.eff>=75?'var(--green)':r.eff>=50?'var(--gold)':'var(--red)'}">${r.eff}%</td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+// ─── COMPLETION LIKELIHOOD CARD ────────────────────
+function rLikelihoodCard(){
+  const l1=getCompletionLikelihood(S.settings.rev1EndDate,'r1');
+  const l2=getCompletionLikelihood(S.settings.rev2EndDate,'r2');
+  function row(label,l){
+    if(!l)return'';
+    if(l.done)return`<div class="like-row">
+      <div class="like-hdr"><span class="like-title">${label}</span><span class="like-badge" style="background:rgba(93,191,122,.15);color:var(--green)">✓ Done</span></div>
+      <div class="like-detail">All allotted hours completed.</div>
+    </div>`;
+    if(l.avgPace<=0)return`<div class="like-row">
+      <div class="like-hdr"><span class="like-title">${label}</span><span class="like-badge" style="background:var(--card2);color:var(--muted)">—</span></div>
+      <div class="like-detail">Not enough recent study data yet to project.</div>
+    </div>`;
+    // pct = % of remaining work that would get done by the deadline at current pace.
+    // >=100 means on/ahead of schedule; below that is a genuine shortfall, not a "maybe".
+    const pct=l.pct;
+    let color,bg,tag;
+    if(pct>=100){color='var(--green)';bg='rgba(93,191,122,.15)';tag='On Track';}
+    else if(pct>=80){color='var(--gold)';bg='rgba(212,168,68,.15)';tag='Close — Small Gap';}
+    else if(pct>=50){color='var(--amber)';bg='rgba(212,132,74,.15)';tag='Behind';}
+    else{color='var(--red)';bg='rgba(224,96,96,.15)';tag='Far Behind';}
+    const barW=Math.min(100,pct);
+    const bufferTxt=l.bufferDays==null?'':l.bufferDays>=0
+      ?` · <span style="color:var(--green)">${l.bufferDays}d buffer</span>`
+      :` · <span style="color:var(--red)">short by ${Math.abs(l.bufferDays)}d</span>`;
+    return`<div class="like-row">
+      <div class="like-hdr"><span class="like-title">${label}</span><span class="like-badge" style="background:${bg};color:${color}">${pct}% ${tag}</span></div>
+      <div class="like-detail">Avg pace (last ${l.windowDays}d): <b style="color:var(--text)">${l.avgPace.toFixed(1)}h/day net</b> · ${l.rem.toFixed(1)}h remaining · ${l.daysLeft}d left${l.daysNeeded?` · finishes in ~${l.daysNeeded}d at this pace`:''}${bufferTxt}</div>
+      <div class="like-track"><div class="like-fill" style="width:${barW}%;background:${color}"></div></div>
+    </div>`;
+  }
+  return`<div class="card" style="margin-top:7px">
+    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">🎯 Completion Projection <span style="font-weight:400;text-transform:none;font-size:9px">(% of remaining work finished by deadline at current pace)</span></div>
+    ${row('1st Revision',l1)}
+    ${row('2nd Revision',l2)}
+  </div>`;
 }
 
 // ─── EFFICIENCY CHART ─────────────────────────────
