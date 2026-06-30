@@ -217,7 +217,9 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .ae-tabs::-webkit-scrollbar{display:none}
 .ae-tab{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;white-space:nowrap;background:var(--card2);color:var(--muted)}
 .ae-tab.on{color:#181714}
-.ae-row{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ae-row{display:flex;flex-direction:column;gap:3px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ae-row-top{display:flex;align-items:center;gap:7px}
+.ae-actual{font-size:9px;color:var(--muted);padding-left:1px}
 .ae-row:last-child{border:none}
 .ae-ch{flex:1;font-size:12px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ae-inp{width:52px;background:var(--card2);border:1.5px solid var(--border);border-radius:7px;color:var(--text);padding:5px 6px;font-size:13px;font-weight:700;text-align:center;outline:none}
@@ -269,7 +271,9 @@ const PRELOADED_SESSIONS=[
 const RD=[7,30];
 
 // ═══════════════════ IST TIMEZONE ═══════════════════
-function nowIST(){return new Date();}
+// (current-moment + IST formatting is handled inline via Intl.DateTimeFormat
+// with explicit timeZone:'Asia/Kolkata' wherever needed, for robustness
+// regardless of the device's own configured local timezone)
 function today(){
   return new Intl.DateTimeFormat('en-CA',{
     timeZone:'Asia/Kolkata'
@@ -285,9 +289,18 @@ function nowHHMM(){
 }
 function t2m(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+m;}
 function calcH(s,e){const d=t2m(e)-t2m(s);return d>0?Math.round(d*100/60)/100:0;}
-function fmtDate(d){if(!d)return'';return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short'});}
-function fmtFull(d){return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'});}
-function addDays(d,n){const dt=new Date(d+'T00:00:00');dt.setDate(dt.getDate()+n);return dt.toISOString().slice(0,10);}
+function fmtDate(d){if(!d)return'';const[y,m,day]=d.split('-').map(Number);return new Date(Date.UTC(y,m-1,day)).toLocaleDateString('en-IN',{day:'2-digit',month:'short',timeZone:'UTC'});}
+function fmtFull(d){const[y,m,day]=d.split('-').map(Number);return new Date(Date.UTC(y,m-1,day)).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',timeZone:'UTC'});}
+// Pure calendar-date arithmetic, anchored to UTC internally so it never
+// depends on the device's local timezone interpretation (constructing a Date
+// via "YYYY-MM-DDT00:00:00" — no 'Z' — is parsed as LOCAL time per the JS
+// spec; on an IST device that silently shifted every result back by 1 day).
+function addDays(d,n){
+  const[y,m,day]=d.split('-').map(Number);
+  const dt=new Date(Date.UTC(y,m-1,day));
+  dt.setUTCDate(dt.getUTCDate()+n);
+  return dt.toISOString().slice(0,10);
+}
 function dBetween(a,b){return Math.round((new Date(b)-new Date(a))/864e5);}
 
 // ═══════════════════ STATE ═══════════════════
@@ -326,6 +339,10 @@ function ga(s,c,r){
 function sa(s,c,r,v){const k=s+'|'+c;if(!S.allotted[k])S.allotted[k]={};S.allotted[k][r]=v;}
 function sAll(s,r){return CHAPTERS[s].reduce((t,c)=>t+ga(s,c,r),0);}
 function sLog(s,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.revision===rv).reduce((t,x)=>t+x.hours,0);}
+// Actual hours logged for one specific chapter — gross/total slot duration,
+// which already includes any idle minutes logged within those sessions
+// (idle time isn't subtracted here; this is the real wall-clock time spent).
+function chapActual(s,c,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.chapter===c&&x.revision===rv).reduce((t,x)=>t+x.hours,0);}
 
 // ═══════════════════ STORAGE & SYNC ═══════════════════
 function saveLocal(){
@@ -532,9 +549,8 @@ function rHome(){
   const q=todayQ(),streak=getStreak();
   const p1=getPace(S.settings.rev1EndDate,'r1'),p2=getPace(S.settings.rev2EndDate,'r2');
   const total=Object.keys(CHAPTERS).reduce((s,k)=>s+CHAPTERS[k].filter(c=>gfs(k,c)).length,0);
-  const ist=nowIST();
-  const timeStr=ist.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
-  const dayStr=ist.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+  const timeStr=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:true}).format(new Date());
+  const dayStr=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long'}).format(new Date());
   const dExam=S.settings.examDate?dBetween(td,S.settings.examDate):null;
   const breaks=getBreaks(td);
 
@@ -925,7 +941,7 @@ function rSetM(){
     <div class="sh-body">
       <div class="stitle" style="margin:0 0 5px">Cloud Sync</div>
       <div class="si"><div class="si-lb"><div class="si-t">Sync Code</div><div class="si-s">Same code on any device → your data loads.</div></div><input class="si-inp code" id="s-code" placeholder="E.g. CA2026" value="${s.userCode}"></div>
-      ${s.userCode?`<div style="font-size:11px;color:var(--muted);margin:-2px 0 9px;padding-left:2px">${S.lastSyncedAt?`Last synced: ${new Date(S.lastSyncedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} IST`:'Not synced yet this session'}</div>
+      ${s.userCode?`<div style="font-size:11px;color:var(--muted);margin:-2px 0 9px;padding-left:2px">${S.lastSyncedAt?`Last synced: ${new Date(S.lastSyncedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'})} IST`:'Not synced yet this session'}</div>
       <button class="btn btn-ghost" style="margin-bottom:9px" id="btn-restore-cloud">🔄 Restore from Cloud (overwrites this device)</button>`:''}
       <div class="stitle" style="margin:11px 0 5px">Dates & Targets</div>
       <div class="si"><div class="si-lb"><div class="si-t">Daily Target (hrs)</div></div><input class="si-inp" type="number" id="s-tgt" step="0.5" value="${s.dailyTargetHours}" style="width:80px"></div>
@@ -990,11 +1006,19 @@ function rAllM(){
       <div style="display:flex;gap:7px;padding:6px 0;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">
         <span style="flex:1">Chapter</span><span class="ae-lbl">R1h</span><span class="ae-lbl">R2h</span>
       </div>
-      ${chs.map((chap,idx)=>`<div class="ae-row">
-        <div class="ae-ch" title="${chap}">${chap}</div>
-        <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r1" value="${ga(subj,chap,'r1')}">
-        <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r2" value="${ga(subj,chap,'r2')}">
-      </div>`).join('')}
+      ${chs.map((chap,idx)=>{
+        const a1=ga(subj,chap,'r1'),a2=ga(subj,chap,'r2');
+        const act1=chapActual(subj,chap,'r1'),act2=chapActual(subj,chap,'r2');
+        const c1=act1>a1?'var(--red)':'var(--green)',c2=act2>a2?'var(--red)':'var(--blue)';
+        return`<div class="ae-row">
+        <div class="ae-row-top">
+          <div class="ae-ch" title="${chap}">${chap}</div>
+          <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r1" value="${a1}">
+          <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r2" value="${a2}">
+        </div>
+        ${(act1>0||act2>0)?`<div class="ae-actual">Actual logged: <b style="color:${c1}">${act1.toFixed(1)}h</b> R1${act2>0?` · <b style="color:${c2}">${act2.toFixed(1)}h</b> R2`:''}</div>`:''}
+      </div>`;
+      }).join('')}
     </div>
     <div class="sh-foot">
       <button class="btn btn-g" id="btn-save-all">Save Allotted Hours</button>
