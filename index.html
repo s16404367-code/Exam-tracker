@@ -190,6 +190,22 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .cs-btn{flex:1;padding:9px;border-radius:9px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);cursor:pointer;transition:all .15s}
 .cs-btn.done{background:#1b2e1f;border-color:var(--green);color:var(--green)}
 .cs-btn.ip{background:#1a1f2e;border-color:var(--blue);color:var(--blue)}
+.ae-status-row{display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-top:3px}
+/* SESSION TYPE TOGGLE */
+.stype-row{display:flex;gap:7px;margin-bottom:13px}
+.stype-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
+.stype-btn.on{background:rgba(93,191,122,.12);border-color:var(--green);color:var(--green)}
+.stype-btn.on.exam{background:rgba(139,127,212,.12);border-color:var(--purple);color:var(--purple)}
+/* EXAM PRACTICE */
+.ep-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;background:rgba(139,127,212,.15);color:var(--purple)}
+.ep-table{width:100%;border-collapse:collapse}
+.ep-table th{text-align:left;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:0 4px 7px}
+.ep-table td{padding:7px 4px;border-top:1px solid var(--border);font-size:12px;font-weight:600}
+.ep-table tr:last-child td{border-bottom:1px solid var(--border);font-weight:800;color:var(--text)}
+/* AVAILABLE-NOW CARD */
+.avail-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 13px;margin:5px 13px 0}
+.avail-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.avail-num{font-size:22px;font-weight:900}
 /* BUTTONS */
 .btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
 .btn:active{opacity:.8}
@@ -343,11 +359,11 @@ function ga(s,c,r){
 }
 function sa(s,c,r,v){const k=s+'|'+c;if(!S.allotted[k])S.allotted[k]={};S.allotted[k][r]=v;}
 function sAll(s,r){return CHAPTERS[s].reduce((t,c)=>t+ga(s,c,r),0);}
-function sLog(s,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.revision===rv).reduce((t,x)=>t+x.hours,0);}
+function sLog(s,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
 // Actual hours logged for one specific chapter — gross/total slot duration,
 // which already includes any idle minutes logged within those sessions
 // (idle time isn't subtracted here; this is the real wall-clock time spent).
-function chapActual(s,c,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.chapter===c&&x.revision===rv).reduce((t,x)=>t+x.hours,0);}
+function chapActual(s,c,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.chapter===c&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
 
 // ═══════════════════ STORAGE & SYNC ═══════════════════
 function saveLocal(){
@@ -471,6 +487,26 @@ function calcDayEff(date){
   };
 }
 function todayH(){return S.sessions.filter(s=>s.date===today()).reduce((t,x)=>t+x.hours,0);}
+// Hours still physically available to study TODAY, counted from right now
+// until the study window ends — not from the start of the day. Only breaks
+// that fall between now and window-end are subtracted (a break already
+// passed doesn't reduce what's left; one only partially remaining is clipped).
+function getRemainingToday(){
+  const td=today();
+  const ds=S.daySettings;
+  const wS=t2m(ds.windowStart),wE=t2m(ds.windowEnd);
+  const nowM=t2m(nowHHMM());
+  const rangeStart=Math.max(nowM,wS);
+  if(wE<=rangeStart)return{availH:0,breaksH:0,pastWindowEnd:nowM>=wE,notStartedYet:nowM<wS};
+  const breaks=getBreaks(td);
+  let brkM=0;
+  breaks.forEach(b=>{
+    const bS=Math.max(t2m(b.start),rangeStart),bE=Math.min(t2m(b.end),wE);
+    if(bE>bS)brkM+=(bE-bS);
+  });
+  const totalM=wE-rangeStart;
+  return{availH:Math.max(0,(totalM-brkM)/60),breaksH:brkM/60,pastWindowEnd:false,notStartedYet:nowM<wS};
+}
 // Done → 0 remaining for that chapter (leftover allotted hours become buffer).
 // Not Done → max(0, allotted − actual), so an over-run never goes negative.
 function chapRemaining(s,c,r){
@@ -565,6 +601,8 @@ function rHome(){
   const dayStr=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long'}).format(new Date());
   const dExam=S.settings.examDate?dBetween(td,S.settings.examDate):null;
   const breaks=getBreaks(td);
+  const rem=getRemainingToday();
+  const remTgt=Math.max(0,tgt-h); // how much more is needed to hit today's target
 
   return`
   <div class="card" style="margin-top:9px">
@@ -572,6 +610,24 @@ function rHome(){
     <div class="big-n">${h.toFixed(1)}<span style="font-size:16px;color:var(--muted)"> / ${tgt}h</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:3px">${streak}🔥 streak · ${total}/146 chapters started</div>
     <div class="pbar-w"><div class="pbar" style="width:${pct}%"></div></div>
+  </div>
+
+  <!-- HOURS LEFT TODAY, FROM CURRENT TIME -->
+  <div class="avail-card">
+    <div class="avail-hdr">
+      <span style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Hours Left Today</span>
+      <span style="font-size:10px;color:var(--muted)">until ${S.daySettings.windowEnd}</span>
+    </div>
+    ${rem.pastWindowEnd?`
+      <div class="avail-num" style="color:var(--muted)">0.0h</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Study window for today has ended.</div>
+    `:rem.notStartedYet?`
+      <div class="avail-num" style="color:var(--blue)">${rem.availH.toFixed(1)}h</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Full day available — window starts ${S.daySettings.windowStart}. ${rem.breaksH>0?`${rem.breaksH.toFixed(1)}h of breaks already subtracted.`:''}</div>
+    `:`
+      <div class="avail-num" style="color:${rem.availH>=remTgt?'var(--green)':'var(--red)'}">${rem.availH.toFixed(1)}h</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">From now to window end, minus ${rem.breaksH.toFixed(1)}h remaining breaks. ${remTgt>0?`Need ${remTgt.toFixed(1)}h more to hit today's ${tgt}h target — ${rem.availH>=remTgt?'still possible ✓':'not enough time left ⚠'}.`:`Today’s target already met ✓`}</div>
+    `}
   </div>
 
   <!-- DAY EFFICIENCY LIVE CARD -->
@@ -634,7 +690,7 @@ function rLog(){
     <div class="lg-box">${sessions.map(s=>`
     <div class="lg-item">
       <div class="sdot" style="background:${SC[s.subject]}"></div>
-      <div class="li-inf"><div class="li-ch">${s.chapter}</div><div class="li-me">${s.subject} · ${s.revision} rev${s.idleMinutes?` · ${s.idleMinutes}min interruptions`:''}</div></div>
+      <div class="li-inf"><div class="li-ch">${s.type==='exam'?(s.epName||'Exam Practice'):s.chapter}</div><div class="li-me">${s.type==='exam'?`<span class="ep-badge">EXAM PRACTICE</span> ${s.epSubject||s.subject}`:`${s.subject} · ${s.revision} rev${s.idleMinutes?` · ${s.idleMinutes}min interruptions`:''}${s.chapter&&(S.chapStatus||{})[s.subject+'|'+s.chapter+'|'+(s.revision==='1st'?'r1':'r2')]==='Done'?' · <b style="color:var(--green)">✓ Done</b>':''}`}</div></div>
       ${s.startTime?`<div class="li-times">${s.startTime}<br>${s.endTime}</div>`:''}
       <div class="li-h">${s.hours.toFixed(1)}h</div>
       <button class="delbtn" data-edit="${s.id}">✏️</button>
@@ -734,6 +790,32 @@ function rProgress(){
 
   <!-- DAY EFFICIENCY CHART -->
   ${rEffChart()}
+
+  <!-- EXAM PRACTICE SUMMARY -->
+  ${(()=>{
+    const epSess=S.sessions.filter(s=>s.type==='exam');
+    if(!epSess.length)return'';
+    const bySubj={};
+    epSess.forEach(s=>{const k=s.epSubject||s.subject||'Mixed';if(!bySubj[k])bySubj[k]={h:0,n:0};bySubj[k].h+=s.hours;bySubj[k].n++;});
+    const totH=epSess.reduce((t,s)=>t+s.hours,0),totN=epSess.length;
+    const recent=[...epSess].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,5);
+    return`<div class="card" style="margin-top:7px">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🎯 Exam Practice Hours</div>
+      <table class="ep-table" style="margin-bottom:12px">
+        <thead><tr><th>Subject</th><th>Hours</th><th>Sessions</th></tr></thead>
+        <tbody>
+          ${Object.entries(bySubj).map(([k,v])=>`<tr><td>${k}</td><td style="color:var(--purple)">${v.h.toFixed(1)}h</td><td style="color:var(--muted)">${v.n}</td></tr>`).join('')}
+          <tr><td>Total</td><td style="color:var(--purple)">${totH.toFixed(1)}h</td><td style="color:var(--muted)">${totN}</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Recent Sessions</div>
+      ${recent.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:12px">
+        <div style="flex:1"><div style="font-weight:700">${s.epSubject||s.subject||'Mixed'}${s.epName?` — <span style="color:var(--muted);font-weight:400">${s.epName}</span>`:''}</div>
+          <div style="font-size:10px;color:var(--muted)">${fmtDate(s.date)}${s.startTime?` · ${s.startTime}–${s.endTime}`:''}</div></div>
+        <div style="font-weight:800;color:var(--purple)">${s.hours.toFixed(1)}h</div>
+      </div>`).join('')}
+    </div>`;
+  })()}
 
   <div style="padding:6px 13px 0">
     <button style="width:100%;padding:10px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--green);font-size:13px;font-weight:800;cursor:pointer" id="btn-edit-allot">✏️ Edit Allotted Hours per Chapter</button>
@@ -909,24 +991,40 @@ function rModal(){
 }
 
 function rAddM(){
-  const d=S.md||{subject:'FR',chapter:'',revision:'1st',startTime:nowHHMM(),endTime:'',idleMinutes:0,date:today()};
+  const d=S.md||{subject:'FR',chapter:'',revision:'1st',startTime:nowHHMM(),endTime:'',idleMinutes:0,date:today(),sessionType:'study'};
+  if(!d.sessionType)d.sessionType='study';
+  const isExam=d.sessionType==='exam';
+  const isEdit=!!d.editId;
   const chs=CHAPTERS[d.subject]||[];
   const dur=d.startTime&&d.endTime?calcH(d.startTime,d.endTime):0;
   const netDur=dur>0?Math.max(0,dur-(d.idleMinutes||0)/60):0;
-  const isEdit=!!d.editId;
   const csKey=(d.subject||'')+'|'+(d.chapter||'')+'|'+(d.revision==='1st'?'r1':'r2');
   const curStatus=d.csStatus!==undefined?d.csStatus:((S.chapStatus||{})[csKey]||'');
+  const SUBJECTS_ALL=[...Object.keys(CHAPTERS),'Mixed (All)'];
   return`<div class="ov" id="ov"><div class="sheet">
-    <div class="sh-hdr"><div class="sh-t">${isEdit?'✏️ Edit Session':'📝 Log Session'}</div><button class="sh-x" id="sh-x">✕</button></div>
+    <div class="sh-hdr"><div class="sh-t">${isEdit?'✏️ Edit':'📝 Log'} ${isExam?'Exam Practice':'Study Session'}</div><button class="sh-x" id="sh-x">✕</button></div>
     <div class="sh-body">
+      <div class="stype-row">
+        <button class="stype-btn${!isExam?' on':''}" id="stype-study">📚 Study</button>
+        <button class="stype-btn exam${isExam?' on':''}" id="stype-exam">🎯 Exam Practice</button>
+      </div>
       <div class="fl"><label>Date (IST)</label><input type="date" id="f-date" value="${d.date}"></div>
+      ${isExam?`
+      <div class="fl"><label>Subject / Paper</label>
+        <select id="f-ep-subj">${SUBJECTS_ALL.map(s=>`<option${s===(d.epSubject||'FR')?' selected':''}>${s}</option>`).join('')}</select>
+      </div>
+      <div class="fl"><label>Paper / Test Name <span style="color:var(--muted);font-weight:400;text-transform:none;font-size:9px">(optional)</span></label>
+        <input type="text" id="f-ep-name" value="${d.epName||''}" placeholder="e.g. Nov 2023 Paper, Mock Test 1...">
+      </div>
+      `:`
       <div class="fl"><label>Subject</label><select id="f-subj">${Object.keys(CHAPTERS).map(s=>`<option${s===d.subject?' selected':''}>${s}</option>`).join('')}</select></div>
       <div class="fl"><label>Chapter</label><select id="f-chap"><option value="">-- Select Chapter --</option>${chs.map(c=>`<option${c===d.chapter?' selected':''}>${c}</option>`).join('')}</select></div>
       <div class="fl"><label>Revision</label><select id="f-rev"><option${d.revision==='1st'?' selected':''}>1st</option><option${d.revision==='2nd'?' selected':''}>2nd</option></select></div>
+      `}
       <div class="fl">
         <label>Start Time → End Time (IST)</label>
         <div class="trow"><input type="time" id="f-st" value="${d.startTime}"><span>→</span><input type="time" id="f-et" value="${d.endTime||''}"></div>
-        <div class="dur-p" id="dur-p">${dur>0?`⏱ Slot: ${dur.toFixed(2)}h (${Math.floor(dur*60)}min) · Net: ${netDur.toFixed(2)}h`:'Enter start & end time'}</div>
+        <div class="dur-p" id="dur-p">${dur>0?`⏱ Slot: ${dur.toFixed(2)}h (${Math.floor(dur*60)}min)${!isExam?` · Net: ${netDur.toFixed(2)}h`:''}`:'Enter start & end time'}</div>
       </div>
       <div class="fl">
         <label>Interruptions within this session (phone, rest, chat...)</label>
@@ -939,7 +1037,7 @@ function rAddM(){
         </div>
         <div class="idle-hint">These are counted as idle time within the session — phone use, short chats, sitting idle, etc.</div>
       </div>
-      ${d.chapter?`
+      ${(!isExam&&d.chapter)?`
       <div class="fl">
         <label>Chapter Status <span style="color:var(--muted);font-weight:400;text-transform:none;font-size:10px">(affects required pace)</span></label>
         <div class="cs-row">
@@ -1034,11 +1132,18 @@ function rAllM(){
         const a1=ga(subj,chap,'r1'),a2=ga(subj,chap,'r2');
         const act1=chapActual(subj,chap,'r1'),act2=chapActual(subj,chap,'r2');
         const c1=act1>a1?'var(--red)':'var(--green)',c2=act2>a2?'var(--red)':'var(--blue)';
+        const st1=(S.chapStatus||{})[subj+'|'+chap+'|r1']||'',st2=(S.chapStatus||{})[subj+'|'+chap+'|r2']||'';
+        const stLabel=st=>st==='Done'?'✓ Done':st==='In Progress'?'⏳ In Progress':'○ Not Started';
+        const stColor=st=>st==='Done'?'var(--green)':st==='In Progress'?'var(--blue)':'var(--muted)';
         return`<div class="ae-row">
         <div class="ae-row-top">
           <div class="ae-ch" title="${chap}">${chap}</div>
           <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r1" value="${a1}">
           <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r2" value="${a2}">
+        </div>
+        <div class="ae-status-row">
+          <span style="color:${stColor(st1)}">R1: ${stLabel(st1)}</span>
+          <span style="color:${stColor(st2)}">R2: ${stLabel(st2)}</span>
         </div>
         ${(act1>0||act2>0)?`<div class="ae-actual">Actual logged: <b style="color:${c1}">${act1.toFixed(1)}h</b> R1${act2>0?` · <b style="color:${c2}">${act2.toFixed(1)}h</b> R2`:''}</div>`:''}
       </div>`;
@@ -1083,7 +1188,7 @@ function el(id){return document.getElementById(id);}
 function bind(){
   document.querySelectorAll('[data-tab]').forEach(e=>e.addEventListener('click',()=>{S.tab=e.dataset.tab;render();}));
   el('btn-cfg')?.addEventListener('click',()=>{S.modal='settings';render();});
-  el('btn-add')?.addEventListener('click',()=>{S.modal='add';S.md={subject:'FR',chapter:'',revision:'1st',startTime:nowHHMM(),endTime:'',idleMinutes:0,date:today()};render();});
+  el('btn-add')?.addEventListener('click',()=>{S.modal='add';S.md={subject:'FR',chapter:'',revision:'1st',startTime:nowHHMM(),endTime:'',idleMinutes:0,date:today(),sessionType:'study'};render();});
   document.querySelectorAll('[data-edit]').forEach(e=>e.addEventListener('click',()=>{
     const s=S.sessions.find(x=>x.id===e.dataset.edit);if(!s)return;
     S.modal='add';S.md={...s,editId:s.id};render();
@@ -1121,6 +1226,24 @@ function bindModal(){
 
   // Add/Edit modal — continuously sync every field into S.md so re-rendering
   // for ANY reason (e.g. subject change) never loses date/time/idle edits.
+  // Session type toggle — both directions capture shared fields first, or
+  // switching modes would silently discard whatever was just typed.
+  el('stype-study')?.addEventListener('click',()=>{if(S.md){
+    S.md.date=el('f-date')?.value||S.md.date;
+    S.md.startTime=el('f-st')?.value||S.md.startTime;
+    S.md.endTime=el('f-et')?.value||S.md.endTime;
+    S.md.idleMinutes=parseInt(el('f-idle')?.value||0)||0;
+    S.md.sessionType='study';
+  }render();});
+  el('stype-exam')?.addEventListener('click',()=>{if(S.md){
+    S.md.date=el('f-date')?.value||S.md.date;
+    S.md.startTime=el('f-st')?.value||S.md.startTime;
+    S.md.endTime=el('f-et')?.value||S.md.endTime;
+    S.md.idleMinutes=parseInt(el('f-idle')?.value||0)||0;
+    S.md.sessionType='exam';
+  }render();});
+  el('f-ep-subj')?.addEventListener('change',()=>{if(S.md)S.md.epSubject=el('f-ep-subj').value;});
+  el('f-ep-name')?.addEventListener('input',()=>{if(S.md)S.md.epName=el('f-ep-name').value;});
   el('f-date')?.addEventListener('change',()=>{if(S.md)S.md.date=el('f-date').value;});
   el('f-rev')?.addEventListener('change',()=>{
     if(!S.md)return;
@@ -1169,30 +1292,39 @@ function bindModal(){
   }));
 
   el('btn-save-log')?.addEventListener('click',()=>{
-    const date=el('f-date')?.value,subject=el('f-subj')?.value;
-    const chapter=el('f-chap')?.value,revision=el('f-rev')?.value;
+    const date=el('f-date')?.value;
     const startTime=el('f-st')?.value,endTime=el('f-et')?.value;
     const idleMinutes=parseInt(el('f-idle')?.value||0)||0;
-    if(!chapter){toast('Pick a chapter','err');return;}
     if(!startTime||!endTime){toast('Enter start and end time','err');return;}
     const hours=calcH(startTime,endTime);
     if(hours<=0){toast('End time must be after start','err');return;}
-    // Persist chapter status right here — set at the moment of recording, no separate edit step needed.
-    const csStatus=S.md?.csStatus;
-    if(csStatus!==undefined){
-      if(!S.chapStatus)S.chapStatus={};
-      const ck=subject+'|'+chapter+'|'+(revision==='1st'?'r1':'r2');
-      if(csStatus==='Done'||csStatus==='In Progress')S.chapStatus[ck]=csStatus;
-      else delete S.chapStatus[ck];
-    }
+    const isExam=S.md?.sessionType==='exam';
     const editId=S.md?.editId;
+    let sessionObj;
+    if(isExam){
+      const epSubject=el('f-ep-subj')?.value||'FR';
+      const epName=(el('f-ep-name')?.value||'').trim();
+      sessionObj={type:'exam',date,epSubject,epName,subject:epSubject,startTime,endTime,hours,idleMinutes};
+    }else{
+      const subject=el('f-subj')?.value,chapter=el('f-chap')?.value,revision=el('f-rev')?.value;
+      if(!chapter){toast('Pick a chapter','err');return;}
+      // Persist chapter status right here — set at the moment of recording, no separate edit step needed.
+      const csStatus=S.md?.csStatus;
+      if(csStatus!==undefined){
+        if(!S.chapStatus)S.chapStatus={};
+        const ck=subject+'|'+chapter+'|'+(revision==='1st'?'r1':'r2');
+        if(csStatus==='Done'||csStatus==='In Progress')S.chapStatus[ck]=csStatus;
+        else delete S.chapStatus[ck];
+      }
+      sessionObj={type:'study',date,subject,chapter,revision,startTime,endTime,hours,idleMinutes};
+    }
     if(editId){
       const idx=S.sessions.findIndex(s=>s.id===editId);
-      if(idx>-1)S.sessions[idx]={...S.sessions[idx],date,subject,chapter,revision,startTime,endTime,hours,idleMinutes};
-      toast(`Updated — ${hours.toFixed(1)}h slot`);
+      if(idx>-1)S.sessions[idx]={...S.sessions[idx],...sessionObj};
+      toast('Updated ✓');
     }else{
-      S.sessions.push({id:Date.now()+'',date,subject,chapter,revision,startTime,endTime,hours,idleMinutes});
-      toast(`Saved — ${hours.toFixed(1)}h slot, ${Math.max(0,hours-idleMinutes/60).toFixed(1)}h net`);
+      S.sessions.push({id:Date.now()+'',...sessionObj});
+      toast(isExam?`Exam Practice saved — ${hours.toFixed(1)}h`:`Saved — ${hours.toFixed(1)}h slot, ${Math.max(0,hours-idleMinutes/60).toFixed(1)}h net`);
     }
     S.modal=null;save();render();
   });
