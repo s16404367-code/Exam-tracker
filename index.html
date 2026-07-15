@@ -53,6 +53,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .tile-n{font-size:22px;font-weight:900;line-height:1}
 .tile-l{font-size:10px;color:var(--muted);margin-top:3px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
 .pace-r{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--card);border:1px solid var(--border);border-radius:11px;margin:5px 13px 0}
+.combo-card{padding:11px 13px;background:var(--card);border:1.5px solid var(--gold);border-radius:11px;margin:5px 13px 0}
+.combo-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.combo-t{font-size:13px;font-weight:800}
+.combo-s{font-size:11px;color:var(--muted);line-height:1.5}
 .pace-l{flex:1}
 .pace-t{font-size:13px;font-weight:700}
 .pace-s{font-size:11px;color:var(--muted);margin-top:2px}
@@ -190,7 +194,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .cs-btn{flex:1;padding:9px;border-radius:9px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);cursor:pointer;transition:all .15s}
 .cs-btn.done{background:#1b2e1f;border-color:var(--green);color:var(--green)}
 .cs-btn.ip{background:#1a1f2e;border-color:var(--blue);color:var(--blue)}
-.ae-status-row{display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-top:3px}
+.ae-status-row{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:10px;font-weight:700;margin-top:3px}
 /* SESSION TYPE TOGGLE */
 .stype-row{display:flex;gap:7px;margin-bottom:13px}
 .stype-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
@@ -242,9 +246,9 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 .ae-actual{font-size:9px;color:var(--muted);padding-left:1px}
 .ae-row:last-child{border:none}
 .ae-ch{flex:1;font-size:12px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ae-inp{width:52px;background:var(--card2);border:1.5px solid var(--border);border-radius:7px;color:var(--text);padding:5px 6px;font-size:13px;font-weight:700;text-align:center;outline:none}
+.ae-inp{width:44px;background:var(--card2);border:1.5px solid var(--border);border-radius:7px;color:var(--text);padding:5px 4px;font-size:12px;font-weight:700;text-align:center;outline:none}
 .ae-inp:focus{border-color:var(--green)}
-.ae-lbl{font-size:10px;color:var(--muted);width:22px;text-align:center;flex-shrink:0}
+.ae-lbl{font-size:9px;color:var(--muted);width:26px;text-align:center;flex-shrink:0}
 /* INTERVAL MODAL */
 .im{padding:12px;border:2px solid var(--border);border-radius:11px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;background:var(--card2);margin-bottom:7px}
 .im:active{transform:scale(.97)}
@@ -263,7 +267,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;p
 <div class="toast" id="toast"></div>
 <script>
 const CHAPTERS={"FR": ["Introduction to Ind AS & Roadmap", "Schedule III & Ind AS 1", "Ind AS 37 – Provisions, Contingent Liabilities & Contingent Assets", "Ind AS 16 – Property, Plant & Equipment", "Ind AS 38 – Intangible Assets", "Ind AS 40 – Investment Properties", "Ind AS 41 – Agriculture", "Ind AS 32, 109, 107 – Financial Instruments", "Ind AS 2 – Inventories", "Ind AS 102 – Share Based Payments", "Ind AS 24 – Related Parties", "Ind AS 19 – Employee Benefits", "Ind AS 20 – Grants", "Ind AS 110 – Consolidated Financial Statements", "Ind AS 111 – Joint Arrangements", "Ind AS 36 – Impairment of Assets", "Ind AS 105 – Non-Current Assets Held for Sale", "Ind AS 12 – Income Taxes", "Ind AS 21 – The Effects of Changes in Foreign Exchange Rates.", "Ind AS 116 – Leases", "Ind AS 103 – Business Combination", "Ind AS 108 – Operating Segments", "Ind AS 115 – Revenue from Contracts with Customers", "Ind AS 33 – Earnings Per Share", "Ind AS 7 – Statement of Cash Flows", "Ind AS 101 – First-time Adoption of Ind AS", "Ind AS 113 – Fair Value Measurement", "Ind AS 23 – Borrowing Costs", "Ind AS 34 – Interim Financial Reporting", "Analysis of Financial Statements", "Accounting & Technology", "Conceptual Framework for Financial Reporting", "Ind AS 8 – Accounting Policies, Changes in Accounting Estimates and Errors", "Ind AS 10 – Events Occurring After the Reporting Period"], "AFM": ["Introduction & Forex", "Time Value of Money (TVM)", "Bond Valuation", "Share Valuation", "Mutual Funds", "Derivatives", "Forex Derivatives", "Portfolio Management", "Mergers & Acquisitions", "Capital Budgeting", "Business Valuation", "International Financial Management", "IRRM (Interest Rate Risk Management)", "Securitisation", "Start-up Finance", "Risk Management", "Security Analysis"], "Audit": ["Quality Control — Chapter 1", "General Auditing Principles and Responsibilities (GAAP) — Chapter 2", "Audit Strategy — Chapter 3", "Risk Assessment, Internal Control and Audit Strategy — Chapter 4", "Audit Evidence — Chapter 5", "Completion and Review — Chapter 6", "Reporting — Chapter 7", "Specialised Areas — Chapter 8", "Related Services — Chapter 9", "Review Engagements — Chapter 10", "Prospective Financial Information (PFI) and Other Assurance Engagements — Chapter 11", "Digital Audit — Chapter 12", "Group Audit (SA 600) — Chapter 13", "Bank Audit — Chapter 14A", "NBFC Audit — Chapter 14B", "Public Sector Undertaking (PSU) Audit — Chapter 15", "Internal Audit — Chapter 16", "Due Diligence — Chapter 17A", "Fraud Investigation — Chapter 17B", "Forensic Audit — Chapter 17C", "Sustainable Development Goals (SDG) and Environmental, Social and Governance (ESG) — Chapter 18", "Professional Ethics — Chapter 19"], "DT": ["Chapter 1 — Profits and Gains from Business & Profession (PGBP)", "Chapter 2 — Taxation of Various Entities", "Chapter 3 — Profit-Linked Deductions", "Chapter 4 — Minimum Alternate Tax (MAT)", "Chapter 5 — Alternate Minimum Tax (AMT)", "Chapter 6 — Assessment Procedure", "Chapter 7 — Rectification of Apparent Mistakes", "Chapter 8 — Appeals and Revision", "Chapter 9 — Important Time Limits for Assessments", "Chapter 10 — Penalties", "Chapter 11 — Dispute Resolution Committee (DRC)", "Chapter 12 — Set-off and Carry Forward of Losses", "Chapter 13 — Taxation of Investment Funds (AIF Category I & II)", "Chapter 14 — Taxation of Securitisation Trusts", "Chapter 15 — Tax Deducted at Source (TDS) / Tax Collected at Source (TCS)", "Chapter 16 — Virtual Digital Assets (VDA)", "Chapter 17 — Capital Gains", "Chapter 18 — Income from Other Sources (IFOS)", "Chapter 19 — Deduction under Section 10AA", "Chapter 20 — Taxation of Mutual Funds", "Chapter 21 — Advance Tax", "Chapter 22 — Updated Return", "Chapter 23 — Dividend Stripping and Bonus Stripping", "Chapter 24 — Taxation of Trusts and Exit Tax", "Chapter 25 — Alternative Tax Regimes", "Chapter 26 — Chapter VI-A Deductions", "Chapter 27 — Tax Audit and Ethical Practice", "Chapter 28 — Non-Resident Taxation", "Chapter 29 — Business Trusts", "Chapter 30 — Double Taxation Avoidance Agreements (DTAA)", "Chapter 31 — Transfer Pricing", "Chapter 32 — Advance Ruling", "Chapter 33 — Compounding of Offences", "Chapter 34 — General Anti-Avoidance Rules (GAAR)", "Chapter 35 — Vodafone Case Law and Its Effects", "Chapter 36 — Application vs Diversion of Income by Overriding Title", "Chapter 37 — Overview of Model Tax Convention", "Chapter 38 — Application and Interpretation of Tax Treaties", "Chapter 39 — Base Erosion and Profit Shifting (BEPS)", "Chapter 40 — Tonnage Taxation", "Chapter 41 — Miscellaneous Amendments", "Chapter 42 — Statement of Financial Transactions (SFT) and Reportable Accounts", "Chapter 43 — Tax Rates", "Chapter 44 — Black Money Law", "Chapter 45 — Case Laws", "Chapter 46 — Latest Developments in International Taxation"], "IDT": ["Ch1 Introduction", "Ch2 Suply under GST", "Ch3 Charges of GST", "Ch4 Time of supply", "Ch5 Exemptions", "Ch6 Value of supply", "Ch7 Input tax credit", "Ch8 Place of supply", "Ch9 E commerce transction", "Ch10 Registration", "Ch11 Tax invoice debit & credit note", "Ch12 Payment of tax", "Ch13 TDS & TCS", "Ch14 Accounts, Records & E way bills", "Ch15 Returns", "Ch16 Imports & Exports", "Ch17 Refunds", "Ch18 Job work", "Ch19 Customs duty", "Ch20 Assesment & Audit", "Ch21 Advance ruling", "Ch22 Inspection search & seziure", "Ch23 Demands & Recovery", "Ch24 Appeals & Revision", "Ch25 Offenses & Penalties", "Ch26 Warehousing", "Ch27 Refunds & FTP"]};
-const ALLOTTED_DEFAULT={"FR": [{"c": "Introduction to Ind AS & Roadmap", "r1": 1.5, "r2": 1.0}, {"c": "Schedule III & Ind AS 1", "r1": 5.0, "r2": 3.33}, {"c": "Ind AS 37 – Provisions, Contingent Liabilities & Contingent Assets", "r1": 2.25, "r2": 1.5}, {"c": "Ind AS 16 – Property, Plant & Equipment", "r1": 3.27, "r2": 2.18}, {"c": "Ind AS 38 – Intangible Assets", "r1": 1.68, "r2": 1.12}, {"c": "Ind AS 40 – Investment Properties", "r1": 1.03, "r2": 0.69}, {"c": "Ind AS 41 – Agriculture", "r1": 1.5, "r2": 1.0}, {"c": "Ind AS 32, 109, 107 – Financial Instruments", "r1": 16.83, "r2": 11.22}, {"c": "Ind AS 2 – Inventories", "r1": 1.73, "r2": 1.16}, {"c": "Ind AS 102 – Share Based Payments", "r1": 4.95, "r2": 3.3}, {"c": "Ind AS 24 – Related Parties", "r1": 1.37, "r2": 0.91}, {"c": "Ind AS 19 – Employee Benefits", "r1": 3.35, "r2": 2.23}, {"c": "Ind AS 20 – Grants", "r1": 1.58, "r2": 1.06}, {"c": "Ind AS 110 – Consolidated Financial Statements", "r1": 15.5, "r2": 10.33}, {"c": "Ind AS 111 – Joint Arrangements", "r1": 1.98, "r2": 1.32}, {"c": "Ind AS 36 – Impairment of Assets", "r1": 3.5, "r2": 2.33}, {"c": "Ind AS 105 – Non-Current Assets Held for Sale", "r1": 1.73, "r2": 1.16}, {"c": "Ind AS 12 – Income Taxes", "r1": 4.5, "r2": 3.0}, {"c": "Ind AS 21 – The Effects of Changes in Foreign Exchange Rates.", "r1": 3.0, "r2": 2.0}, {"c": "Ind AS 116 – Leases", "r1": 5.75, "r2": 3.83}, {"c": "Ind AS 103 – Business Combination", "r1": 9.25, "r2": 6.17}, {"c": "Ind AS 108 – Operating Segments", "r1": 1.5, "r2": 1.0}, {"c": "Ind AS 115 – Revenue from Contracts with Customers", "r1": 8.25, "r2": 5.5}, {"c": "Ind AS 33 – Earnings Per Share", "r1": 4.5, "r2": 3.0}, {"c": "Ind AS 7 – Statement of Cash Flows", "r1": 2.5, "r2": 1.67}, {"c": "Ind AS 101 – First-time Adoption of Ind AS", "r1": 2.0, "r2": 1.33}, {"c": "Ind AS 113 – Fair Value Measurement", "r1": 0.75, "r2": 0.5}, {"c": "Ind AS 23 – Borrowing Costs", "r1": 1.75, "r2": 1.17}, {"c": "Ind AS 34 – Interim Financial Reporting", "r1": 1.33, "r2": 0.89}, {"c": "Analysis of Financial Statements", "r1": 1.5, "r2": 1.0}, {"c": "Accounting & Technology", "r1": 3.0, "r2": 2.0}, {"c": "Conceptual Framework for Financial Reporting", "r1": 3.0, "r2": 2.0}, {"c": "Ind AS 8 – Accounting Policies, Changes in Accounting Estimates and Errors", "r1": 3.0, "r2": 2.0}, {"c": "Ind AS 10 – Events Occurring After the Reporting Period", "r1": 3.0, "r2": 2.0}], "AFM": [{"c": "Introduction & Forex", "r1": 15.0, "r2": 10.0}, {"c": "Time Value of Money (TVM)", "r1": 1.5, "r2": 1.0}, {"c": "Bond Valuation", "r1": 8.75, "r2": 5.83}, {"c": "Share Valuation", "r1": 6.0, "r2": 4.0}, {"c": "Mutual Funds", "r1": 4.53, "r2": 3.02}, {"c": "Derivatives", "r1": 16.25, "r2": 10.83}, {"c": "Forex Derivatives", "r1": 3.58, "r2": 2.39}, {"c": "Portfolio Management", "r1": 14.0, "r2": 9.33}, {"c": "Mergers & Acquisitions", "r1": 6.75, "r2": 4.5}, {"c": "Capital Budgeting", "r1": 8.7, "r2": 5.8}, {"c": "Business Valuation", "r1": 5.25, "r2": 3.5}, {"c": "International Financial Management", "r1": 3.5, "r2": 2.33}, {"c": "IRRM (Interest Rate Risk Management)", "r1": 8.25, "r2": 5.5}, {"c": "Securitisation", "r1": 1.0, "r2": 0.67}, {"c": "Start-up Finance", "r1": 1.0, "r2": 0.67}, {"c": "Risk Management", "r1": 1.0, "r2": 0.67}, {"c": "Security Analysis", "r1": 1.0, "r2": 0.67}], "Audit": [{"c": "Quality Control — Chapter 1", "r1": 3.75, "r2": 3.41}, {"c": "General Auditing Principles and Responsibilities (GAAP) — Chapter 2", "r1": 9.5, "r2": 8.64}, {"c": "Audit Strategy — Chapter 3", "r1": 6.75, "r2": 6.14}, {"c": "Risk Assessment, Internal Control and Audit Strategy — Chapter 4", "r1": 3.25, "r2": 2.95}, {"c": "Audit Evidence — Chapter 5", "r1": 3.0, "r2": 2.73}, {"c": "Completion and Review — Chapter 6", "r1": 1.5, "r2": 1.36}, {"c": "Reporting — Chapter 7", "r1": 16.0, "r2": 14.55}, {"c": "Specialised Areas — Chapter 8", "r1": 4.75, "r2": 4.32}, {"c": "Related Services — Chapter 9", "r1": 1.33, "r2": 1.21}, {"c": "Review Engagements — Chapter 10", "r1": 3.5, "r2": 3.18}, {"c": "Prospective Financial Information (PFI) and Other Assurance Engagements — Chapter 11", "r1": 2.5, "r2": 2.27}, {"c": "Digital Audit — Chapter 12", "r1": 4.0, "r2": 3.64}, {"c": "Group Audit (SA 600) — Chapter 13", "r1": 3.5, "r2": 3.18}, {"c": "Bank Audit — Chapter 14A", "r1": 5.5, "r2": 5.0}, {"c": "NBFC Audit — Chapter 14B", "r1": 3.5, "r2": 3.18}, {"c": "Public Sector Undertaking (PSU) Audit — Chapter 15", "r1": 2.0, "r2": 1.82}, {"c": "Internal Audit — Chapter 16", "r1": 2.0, "r2": 1.82}, {"c": "Due Diligence — Chapter 17A", "r1": 1.0, "r2": 0.91}, {"c": "Fraud Investigation — Chapter 17B", "r1": 1.5, "r2": 1.36}, {"c": "Forensic Audit — Chapter 17C", "r1": 1.0, "r2": 0.91}, {"c": "Sustainable Development Goals (SDG) and Environmental, Social and Governance (ESG) — Chapter 18", "r1": 3.0, "r2": 2.73}, {"c": "Professional Ethics — Chapter 19", "r1": 14.0, "r2": 12.73}], "DT": [{"c": "Chapter 1 — Profits and Gains from Business & Profession (PGBP)", "r1": 8.0, "r2": 6.4}, {"c": "Chapter 2 — Taxation of Various Entities", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 3 — Profit-Linked Deductions", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 4 — Minimum Alternate Tax (MAT)", "r1": 0.5, "r2": 0.4}, {"c": "Chapter 5 — Alternate Minimum Tax (AMT)", "r1": 0.5, "r2": 0.4}, {"c": "Chapter 6 — Assessment Procedure", "r1": 5.0, "r2": 4.0}, {"c": "Chapter 7 — Rectification of Apparent Mistakes", "r1": 1.5, "r2": 1.2}, {"c": "Chapter 8 — Appeals and Revision", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 9 — Important Time Limits for Assessments", "r1": 0.5, "r2": 0.4}, {"c": "Chapter 10 — Penalties", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 11 — Dispute Resolution Committee (DRC)", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 12 — Set-off and Carry Forward of Losses", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 13 — Taxation of Investment Funds (AIF Category I & II)", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 14 — Taxation of Securitisation Trusts", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 15 — Tax Deducted at Source (TDS) / Tax Collected at Source (TCS)", "r1": 4.0, "r2": 3.2}, {"c": "Chapter 16 — Virtual Digital Assets (VDA)", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 17 — Capital Gains", "r1": 3.0, "r2": 2.4}, {"c": "Chapter 18 — Income from Other Sources (IFOS)", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 19 — Deduction under Section 10AA", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 20 — Taxation of Mutual Funds", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 21 — Advance Tax", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 22 — Updated Return", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 23 — Dividend Stripping and Bonus Stripping", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 24 — Taxation of Trusts and Exit Tax", "r1": 4.0, "r2": 3.2}, {"c": "Chapter 25 — Alternative Tax Regimes", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 26 — Chapter VI-A Deductions", "r1": 3.0, "r2": 2.4}, {"c": "Chapter 27 — Tax Audit and Ethical Practice", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 28 — Non-Resident Taxation", "r1": 4.0, "r2": 3.2}, {"c": "Chapter 29 — Business Trusts", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 30 — Double Taxation Avoidance Agreements (DTAA)", "r1": 5.0, "r2": 4.0}, {"c": "Chapter 31 — Transfer Pricing", "r1": 6.0, "r2": 4.8}, {"c": "Chapter 32 — Advance Ruling", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 33 — Compounding of Offences", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 34 — General Anti-Avoidance Rules (GAAR)", "r1": 4.0, "r2": 3.2}, {"c": "Chapter 35 — Vodafone Case Law and Its Effects", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 36 — Application vs Diversion of Income by Overriding Title", "r1": 0.5, "r2": 0.4}, {"c": "Chapter 37 — Overview of Model Tax Convention", "r1": 1.0, "r2": 0.8}, {"c": "Chapter 38 — Application and Interpretation of Tax Treaties", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 39 — Base Erosion and Profit Shifting (BEPS)", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 40 — Tonnage Taxation", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 41 — Miscellaneous Amendments", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 42 — Statement of Financial Transactions (SFT) and Reportable Accounts", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 43 — Tax Rates", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 44 — Black Money Law", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 45 — Case Laws", "r1": 2.0, "r2": 1.6}, {"c": "Chapter 46 — Latest Developments in International Taxation", "r1": 2.0, "r2": 1.6}], "IDT": [{"c": "Ch1 Introduction", "r1": 1.5, "r2": 1.0}, {"c": "Ch2 Suply under GST", "r1": 3.5, "r2": 2.33}, {"c": "Ch3 Charges of GST", "r1": 3.5, "r2": 2.33}, {"c": "Ch4 Time of supply", "r1": 3.5, "r2": 2.33}, {"c": "Ch5 Exemptions", "r1": 3.5, "r2": 2.33}, {"c": "Ch6 Value of supply", "r1": 3.5, "r2": 2.33}, {"c": "Ch7 Input tax credit", "r1": 5.0, "r2": 3.33}, {"c": "Ch8 Place of supply", "r1": 5.0, "r2": 3.33}, {"c": "Ch9 E commerce transction", "r1": 2.5, "r2": 1.67}, {"c": "Ch10 Registration", "r1": 2.5, "r2": 1.67}, {"c": "Ch11 Tax invoice debit & credit note", "r1": 2.5, "r2": 1.67}, {"c": "Ch12 Payment of tax", "r1": 2.5, "r2": 1.67}, {"c": "Ch13 TDS & TCS", "r1": 2.5, "r2": 1.67}, {"c": "Ch14 Accounts, Records & E way bills", "r1": 2.5, "r2": 1.67}, {"c": "Ch15 Returns", "r1": 2.5, "r2": 1.67}, {"c": "Ch16 Imports & Exports", "r1": 2.5, "r2": 1.67}, {"c": "Ch17 Refunds", "r1": 2.5, "r2": 1.67}, {"c": "Ch18 Job work", "r1": 2.5, "r2": 1.67}, {"c": "Ch19 Customs duty", "r1": 35.0, "r2": 23.33}, {"c": "Ch20 Assesment & Audit", "r1": 5.0, "r2": 3.33}, {"c": "Ch21 Advance ruling", "r1": 5.0, "r2": 3.33}, {"c": "Ch22 Inspection search & seziure", "r1": 5.0, "r2": 3.33}, {"c": "Ch23 Demands & Recovery", "r1": 5.0, "r2": 3.33}, {"c": "Ch24 Appeals & Revision", "r1": 5.0, "r2": 3.33}, {"c": "Ch25 Offenses & Penalties", "r1": 5.0, "r2": 3.33}, {"c": "Ch26 Warehousing", "r1": 5.0, "r2": 3.33}, {"c": "Ch27 Refunds & FTP", "r1": 4.0, "r2": 2.67}]};
+const ALLOTTED_DEFAULT={"FR": [{"c": "Introduction to Ind AS & Roadmap", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Schedule III & Ind AS 1", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ind AS 37 – Provisions, Contingent Liabilities & Contingent Assets", "r1": 2.25, "r2": 1.5, "r1a": 0.9}, {"c": "Ind AS 16 – Property, Plant & Equipment", "r1": 3.27, "r2": 2.18, "r1a": 1.31}, {"c": "Ind AS 38 – Intangible Assets", "r1": 1.68, "r2": 1.12, "r1a": 0.67}, {"c": "Ind AS 40 – Investment Properties", "r1": 1.03, "r2": 0.69, "r1a": 0.41}, {"c": "Ind AS 41 – Agriculture", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Ind AS 32, 109, 107 – Financial Instruments", "r1": 16.83, "r2": 11.22, "r1a": 6.73}, {"c": "Ind AS 2 – Inventories", "r1": 1.73, "r2": 1.16, "r1a": 0.69}, {"c": "Ind AS 102 – Share Based Payments", "r1": 4.95, "r2": 3.3, "r1a": 1.98}, {"c": "Ind AS 24 – Related Parties", "r1": 1.37, "r2": 0.91, "r1a": 0.55}, {"c": "Ind AS 19 – Employee Benefits", "r1": 3.35, "r2": 2.23, "r1a": 1.34}, {"c": "Ind AS 20 – Grants", "r1": 1.58, "r2": 1.06, "r1a": 0.63}, {"c": "Ind AS 110 – Consolidated Financial Statements", "r1": 15.5, "r2": 10.33, "r1a": 6.2}, {"c": "Ind AS 111 – Joint Arrangements", "r1": 1.98, "r2": 1.32, "r1a": 0.79}, {"c": "Ind AS 36 – Impairment of Assets", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ind AS 105 – Non-Current Assets Held for Sale", "r1": 1.73, "r2": 1.16, "r1a": 0.69}, {"c": "Ind AS 12 – Income Taxes", "r1": 4.5, "r2": 3.0, "r1a": 1.8}, {"c": "Ind AS 21 – The Effects of Changes in Foreign Exchange Rates.", "r1": 3.0, "r2": 2.0, "r1a": 1.2}, {"c": "Ind AS 116 – Leases", "r1": 5.75, "r2": 3.83, "r1a": 2.3}, {"c": "Ind AS 103 – Business Combination", "r1": 9.25, "r2": 6.17, "r1a": 3.7}, {"c": "Ind AS 108 – Operating Segments", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Ind AS 115 – Revenue from Contracts with Customers", "r1": 8.25, "r2": 5.5, "r1a": 3.3}, {"c": "Ind AS 33 – Earnings Per Share", "r1": 4.5, "r2": 3.0, "r1a": 1.8}, {"c": "Ind AS 7 – Statement of Cash Flows", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ind AS 101 – First-time Adoption of Ind AS", "r1": 2.0, "r2": 1.33, "r1a": 0.8}, {"c": "Ind AS 113 – Fair Value Measurement", "r1": 0.75, "r2": 0.5, "r1a": 0.3}, {"c": "Ind AS 23 – Borrowing Costs", "r1": 1.75, "r2": 1.17, "r1a": 0.7}, {"c": "Ind AS 34 – Interim Financial Reporting", "r1": 1.33, "r2": 0.89, "r1a": 0.53}, {"c": "Analysis of Financial Statements", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Accounting & Technology", "r1": 3.0, "r2": 2.0, "r1a": 1.2}, {"c": "Conceptual Framework for Financial Reporting", "r1": 3.0, "r2": 2.0, "r1a": 1.2}, {"c": "Ind AS 8 – Accounting Policies, Changes in Accounting Estimates and Errors", "r1": 3.0, "r2": 2.0, "r1a": 1.2}, {"c": "Ind AS 10 – Events Occurring After the Reporting Period", "r1": 3.0, "r2": 2.0, "r1a": 1.2}], "AFM": [{"c": "Introduction & Forex", "r1": 15.0, "r2": 10.0, "r1a": 6.0}, {"c": "Time Value of Money (TVM)", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Bond Valuation", "r1": 8.75, "r2": 5.83, "r1a": 3.5}, {"c": "Share Valuation", "r1": 6.0, "r2": 4.0, "r1a": 2.4}, {"c": "Mutual Funds", "r1": 4.53, "r2": 3.02, "r1a": 1.81}, {"c": "Derivatives", "r1": 16.25, "r2": 10.83, "r1a": 6.5}, {"c": "Forex Derivatives", "r1": 3.58, "r2": 2.39, "r1a": 1.43}, {"c": "Portfolio Management", "r1": 14.0, "r2": 9.33, "r1a": 5.6}, {"c": "Mergers & Acquisitions", "r1": 6.75, "r2": 4.5, "r1a": 2.7}, {"c": "Capital Budgeting", "r1": 8.7, "r2": 5.8, "r1a": 3.48}, {"c": "Business Valuation", "r1": 5.25, "r2": 3.5, "r1a": 2.1}, {"c": "International Financial Management", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "IRRM (Interest Rate Risk Management)", "r1": 8.25, "r2": 5.5, "r1a": 3.3}, {"c": "Securitisation", "r1": 1.0, "r2": 0.67, "r1a": 0.4}, {"c": "Start-up Finance", "r1": 1.0, "r2": 0.67, "r1a": 0.4}, {"c": "Risk Management", "r1": 1.0, "r2": 0.67, "r1a": 0.4}, {"c": "Security Analysis", "r1": 1.0, "r2": 0.67, "r1a": 0.4}], "Audit": [{"c": "Quality Control — Chapter 1", "r1": 3.75, "r2": 3.41, "r1a": 1.5}, {"c": "General Auditing Principles and Responsibilities (GAAP) — Chapter 2", "r1": 9.5, "r2": 8.64, "r1a": 3.8}, {"c": "Audit Strategy — Chapter 3", "r1": 6.75, "r2": 6.14, "r1a": 2.7}, {"c": "Risk Assessment, Internal Control and Audit Strategy — Chapter 4", "r1": 3.25, "r2": 2.95, "r1a": 1.3}, {"c": "Audit Evidence — Chapter 5", "r1": 3.0, "r2": 2.73, "r1a": 1.2}, {"c": "Completion and Review — Chapter 6", "r1": 1.5, "r2": 1.36, "r1a": 0.6}, {"c": "Reporting — Chapter 7", "r1": 16.0, "r2": 14.55, "r1a": 6.4}, {"c": "Specialised Areas — Chapter 8", "r1": 4.75, "r2": 4.32, "r1a": 1.9}, {"c": "Related Services — Chapter 9", "r1": 1.33, "r2": 1.21, "r1a": 0.53}, {"c": "Review Engagements — Chapter 10", "r1": 3.5, "r2": 3.18, "r1a": 1.4}, {"c": "Prospective Financial Information (PFI) and Other Assurance Engagements — Chapter 11", "r1": 2.5, "r2": 2.27, "r1a": 1.0}, {"c": "Digital Audit — Chapter 12", "r1": 4.0, "r2": 3.64, "r1a": 1.6}, {"c": "Group Audit (SA 600) — Chapter 13", "r1": 3.5, "r2": 3.18, "r1a": 1.4}, {"c": "Bank Audit — Chapter 14A", "r1": 5.5, "r2": 5.0, "r1a": 2.2}, {"c": "NBFC Audit — Chapter 14B", "r1": 3.5, "r2": 3.18, "r1a": 1.4}, {"c": "Public Sector Undertaking (PSU) Audit — Chapter 15", "r1": 2.0, "r2": 1.82, "r1a": 0.8}, {"c": "Internal Audit — Chapter 16", "r1": 2.0, "r2": 1.82, "r1a": 0.8}, {"c": "Due Diligence — Chapter 17A", "r1": 1.0, "r2": 0.91, "r1a": 0.4}, {"c": "Fraud Investigation — Chapter 17B", "r1": 1.5, "r2": 1.36, "r1a": 0.6}, {"c": "Forensic Audit — Chapter 17C", "r1": 1.0, "r2": 0.91, "r1a": 0.4}, {"c": "Sustainable Development Goals (SDG) and Environmental, Social and Governance (ESG) — Chapter 18", "r1": 3.0, "r2": 2.73, "r1a": 1.2}, {"c": "Professional Ethics — Chapter 19", "r1": 14.0, "r2": 12.73, "r1a": 5.6}], "DT": [{"c": "Chapter 1 — Profits and Gains from Business & Profession (PGBP)", "r1": 8.0, "r2": 6.4, "r1a": 3.2}, {"c": "Chapter 2 — Taxation of Various Entities", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 3 — Profit-Linked Deductions", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 4 — Minimum Alternate Tax (MAT)", "r1": 0.5, "r2": 0.4, "r1a": 0.25}, {"c": "Chapter 5 — Alternate Minimum Tax (AMT)", "r1": 0.5, "r2": 0.4, "r1a": 0.25}, {"c": "Chapter 6 — Assessment Procedure", "r1": 5.0, "r2": 4.0, "r1a": 2.0}, {"c": "Chapter 7 — Rectification of Apparent Mistakes", "r1": 1.5, "r2": 1.2, "r1a": 0.6}, {"c": "Chapter 8 — Appeals and Revision", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 9 — Important Time Limits for Assessments", "r1": 0.5, "r2": 0.4, "r1a": 0.25}, {"c": "Chapter 10 — Penalties", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 11 — Dispute Resolution Committee (DRC)", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 12 — Set-off and Carry Forward of Losses", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 13 — Taxation of Investment Funds (AIF Category I & II)", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 14 — Taxation of Securitisation Trusts", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 15 — Tax Deducted at Source (TDS) / Tax Collected at Source (TCS)", "r1": 4.0, "r2": 3.2, "r1a": 1.6}, {"c": "Chapter 16 — Virtual Digital Assets (VDA)", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 17 — Capital Gains", "r1": 3.0, "r2": 2.4, "r1a": 1.2}, {"c": "Chapter 18 — Income from Other Sources (IFOS)", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 19 — Deduction under Section 10AA", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 20 — Taxation of Mutual Funds", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 21 — Advance Tax", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 22 — Updated Return", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 23 — Dividend Stripping and Bonus Stripping", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 24 — Taxation of Trusts and Exit Tax", "r1": 4.0, "r2": 3.2, "r1a": 1.6}, {"c": "Chapter 25 — Alternative Tax Regimes", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 26 — Chapter VI-A Deductions", "r1": 3.0, "r2": 2.4, "r1a": 1.2}, {"c": "Chapter 27 — Tax Audit and Ethical Practice", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 28 — Non-Resident Taxation", "r1": 4.0, "r2": 3.2, "r1a": 1.6}, {"c": "Chapter 29 — Business Trusts", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 30 — Double Taxation Avoidance Agreements (DTAA)", "r1": 5.0, "r2": 4.0, "r1a": 2.0}, {"c": "Chapter 31 — Transfer Pricing", "r1": 6.0, "r2": 4.8, "r1a": 2.4}, {"c": "Chapter 32 — Advance Ruling", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 33 — Compounding of Offences", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 34 — General Anti-Avoidance Rules (GAAR)", "r1": 4.0, "r2": 3.2, "r1a": 1.6}, {"c": "Chapter 35 — Vodafone Case Law and Its Effects", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 36 — Application vs Diversion of Income by Overriding Title", "r1": 0.5, "r2": 0.4, "r1a": 0.25}, {"c": "Chapter 37 — Overview of Model Tax Convention", "r1": 1.0, "r2": 0.8, "r1a": 0.4}, {"c": "Chapter 38 — Application and Interpretation of Tax Treaties", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 39 — Base Erosion and Profit Shifting (BEPS)", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 40 — Tonnage Taxation", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 41 — Miscellaneous Amendments", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 42 — Statement of Financial Transactions (SFT) and Reportable Accounts", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 43 — Tax Rates", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 44 — Black Money Law", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 45 — Case Laws", "r1": 2.0, "r2": 1.6, "r1a": 0.8}, {"c": "Chapter 46 — Latest Developments in International Taxation", "r1": 2.0, "r2": 1.6, "r1a": 0.8}], "IDT": [{"c": "Ch1 Introduction", "r1": 1.5, "r2": 1.0, "r1a": 0.6}, {"c": "Ch2 Suply under GST", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ch3 Charges of GST", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ch4 Time of supply", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ch5 Exemptions", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ch6 Value of supply", "r1": 3.5, "r2": 2.33, "r1a": 1.4}, {"c": "Ch7 Input tax credit", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch8 Place of supply", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch9 E commerce transction", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch10 Registration", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch11 Tax invoice debit & credit note", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch12 Payment of tax", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch13 TDS & TCS", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch14 Accounts, Records & E way bills", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch15 Returns", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch16 Imports & Exports", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch17 Refunds", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch18 Job work", "r1": 2.5, "r2": 1.67, "r1a": 1.0}, {"c": "Ch19 Customs duty", "r1": 35.0, "r2": 23.33, "r1a": 14.0}, {"c": "Ch20 Assesment & Audit", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch21 Advance ruling", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch22 Inspection search & seziure", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch23 Demands & Recovery", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch24 Appeals & Revision", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch25 Offenses & Penalties", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch26 Warehousing", "r1": 5.0, "r2": 3.33, "r1a": 2.0}, {"c": "Ch27 Refunds & FTP", "r1": 4.0, "r2": 2.67, "r1a": 1.6}]};
 
 const SC={FR:'#5AABF0',AFM:'#5DBF7A',Audit:'#D4A844',DT:'#E06060',IDT:'#8B7FD4'};
 // One-time seed data — the sessions you logged 26–29 Jun, added once automatically.
@@ -289,6 +293,12 @@ const PRELOADED_SESSIONS=[
 ];
 // SIMPLIFIED: only 2 recall intervals — +7 days and +30 days
 const RD=[7,30];
+// Revision key <-> session.revision label mapping. Adding a new revision
+// pass (like R1a) only ever means adding one entry here — every function
+// that maps a session's revision label to its internal key/bucket reads
+// from this, instead of a hardcoded 1st/2nd ternary.
+const REV_KEY_TO_LABEL={r1:'1st',r1a:'R1a',r2:'2nd'};
+const REV_LABEL_TO_KEY={'1st':'r1','R1a':'r1a','2nd':'r2'};
 
 // ═══════════════════ IST TIMEZONE ═══════════════════
 // (current-moment + IST formatting is handled inline via Intl.DateTimeFormat
@@ -359,11 +369,11 @@ function ga(s,c,r){
 }
 function sa(s,c,r,v){const k=s+'|'+c;if(!S.allotted[k])S.allotted[k]={};S.allotted[k][r]=v;}
 function sAll(s,r){return CHAPTERS[s].reduce((t,c)=>t+ga(s,c,r),0);}
-function sLog(s,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
+function sLog(s,r){const rv=REV_KEY_TO_LABEL[r];return S.sessions.filter(x=>x.subject===s&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
 // Actual hours logged for one specific chapter — gross/total slot duration,
 // which already includes any idle minutes logged within those sessions
 // (idle time isn't subtracted here; this is the real wall-clock time spent).
-function chapActual(s,c,r){const rv=r==='r1'?'1st':'2nd';return S.sessions.filter(x=>x.subject===s&&x.chapter===c&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
+function chapActual(s,c,r){const rv=REV_KEY_TO_LABEL[r];return S.sessions.filter(x=>x.subject===s&&x.chapter===c&&x.revision===rv&&x.type!=='exam').reduce((t,x)=>t+x.hours,0);}
 
 // ═══════════════════ STORAGE & SYNC ═══════════════════
 function saveLocal(){
@@ -430,7 +440,11 @@ function getBreaks(date){
   return(S.daySettings.dayBreaks[date]||S.daySettings.defaultBreaks).filter(b=>b.start&&b.end&&t2m(b.end)>t2m(b.start));
 }
 function getSortedSessions(date){
-  return S.sessions.filter(s=>s.date===date&&s.startTime&&s.endTime)
+  // Exam-practice sessions are deliberately excluded here: this feeds Day
+  // Efficiency, the 14-day chart, and the recent-pace average used in the
+  // Completion Projection. None of those should be inflated by time spent
+  // on exam practice, since it doesn't reduce remaining chapter-hours.
+  return S.sessions.filter(s=>s.date===date&&s.startTime&&s.endTime&&s.type!=='exam')
     .sort((a,b)=>t2m(a.startTime)-t2m(b.startTime));
 }
 // Smart break: break is truncated if a session starts before break ends.
@@ -486,7 +500,7 @@ function calcDayEff(date){
     effPct:availM>0?Math.max(0,Math.min(100,Math.round(netM/availM*100))):0,
   };
 }
-function todayH(){return S.sessions.filter(s=>s.date===today()).reduce((t,x)=>t+x.hours,0);}
+function todayH(){return S.sessions.filter(s=>s.date===today()&&s.type!=='exam').reduce((t,x)=>t+x.hours,0);}
 // Hours still physically available to study TODAY, counted from right now
 // until the study window ends — not from the start of the day. Only breaks
 // that fall between now and window-end are subtracted (a break already
@@ -521,6 +535,21 @@ function getPace(endDate,rev){
   const logH=Object.keys(CHAPTERS).reduce((t,s)=>t+sLog(s,rev),0);
   const rem=totalRem(rev);
   return{days,needed:(rem/days).toFixed(1),target:S.settings.dailyTargetHours,rem,allH,logH};
+}
+// R1 and R1a share the same due date, so on any given day you're pulling
+// from the SAME daily-hour budget for both. Checking each against the full
+// daily target independently can show "On Track" + "On Track" while the
+// two combined actually exceed what a day has — this checks the true sum.
+function getCombinedR1Pace(){
+  const p1=getPace(S.settings.rev1EndDate,'r1');
+  const p1a=getPace(S.settings.rev1EndDate,'r1a');
+  if(!p1&&!p1a)return null;
+  const needed1=p1?parseFloat(p1.needed):0;
+  const needed1a=p1a?parseFloat(p1a.needed):0;
+  const combined=needed1+needed1a;
+  const target=S.settings.dailyTargetHours;
+  const deficit=combined-target; // >0 = short by this many hours/day, <=0 = fits with this much to spare
+  return{needed1,needed1a,combined,target,deficit,days:(p1||p1a).days};
 }
 // Projects whether the revision will finish on time, using the average NET
 // (productive) hours/day from the last few days. pct = what % of the
@@ -562,7 +591,7 @@ function getStreak(){
   let n=0,td=today();
   for(let i=0;i<400;i++){
     const d=addDays(td,-i);
-    if(S.sessions.some(s=>s.date===d))n++;else if(i>0)break;
+    if(S.sessions.some(s=>s.date===d&&s.type!=='exam'))n++;else if(i>0)break;
   }
   return n;
 }
@@ -595,7 +624,8 @@ function rHome(){
   const eff=calcDayEff(td);
   const pct=Math.min(100,(h/tgt)*100);
   const q=todayQ(),streak=getStreak();
-  const p1=getPace(S.settings.rev1EndDate,'r1'),p2=getPace(S.settings.rev2EndDate,'r2');
+  const p1=getPace(S.settings.rev1EndDate,'r1'),p1a=getPace(S.settings.rev1EndDate,'r1a'),p2=getPace(S.settings.rev2EndDate,'r2');
+  const pc=getCombinedR1Pace();
   const total=Object.keys(CHAPTERS).reduce((s,k)=>s+CHAPTERS[k].filter(c=>gfs(k,c)).length,0);
   const timeStr=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:true}).format(new Date());
   const dayStr=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long'}).format(new Date());
@@ -655,6 +685,14 @@ function rHome(){
   </div>
 
   ${p1?`<div class="pace-r"><div class="pace-l"><div class="pace-t">1st Rev Pace</div><div class="pace-s">${p1.days}d left · ${p1.rem.toFixed(1)}h remaining · need ${p1.needed}h/day</div></div><div class="pill ${parseFloat(p1.needed)<=p1.target?'p-ok':'p-err'}">${parseFloat(p1.needed)<=p1.target?'On Track':'Behind'}</div></div>`:''}
+  ${p1a?`<div class="pace-r"><div class="pace-l"><div class="pace-t">R1a Pace</div><div class="pace-s">${p1a.days}d left · ${p1a.rem.toFixed(1)}h remaining · need ${p1a.needed}h/day</div></div><div class="pill ${parseFloat(p1a.needed)<=p1a.target?'p-ok':'p-err'}">${parseFloat(p1a.needed)<=p1a.target?'On Track':'Behind'}</div></div>`:''}
+  ${pc?`<div class="combo-card">
+    <div class="combo-hdr">
+      <span class="combo-t">⚡ Combined R1 + R1a (same due date)</span>
+      <span class="pill ${pc.deficit<=0?'p-ok':'p-err'}">${pc.deficit<=0?'On Track':`${pc.deficit.toFixed(1)}h short`}</span>
+    </div>
+    <div class="combo-s">${pc.needed1.toFixed(1)}h (R1) + ${pc.needed1a.toFixed(1)}h (R1a) = <b style="color:var(--text)">${pc.combined.toFixed(1)}h/day needed</b> vs ${pc.target.toFixed(1)}h/day target${pc.deficit>0?` — you're <b style="color:var(--red)">${pc.deficit.toFixed(1)}h short every day</b> at current pace`:` — ${Math.abs(pc.deficit).toFixed(1)}h/day to spare`}</div>
+  </div>`:''}
   ${p2?`<div class="pace-r"><div class="pace-l"><div class="pace-t">2nd Rev Pace</div><div class="pace-s">${p2.days}d left · ${p2.rem.toFixed(1)}h remaining · need ${p2.needed}h/day</div></div><div class="pill ${parseFloat(p2.needed)<=p2.target?'p-ok':'p-err'}">${parseFloat(p2.needed)<=p2.target?'On Track':'Behind'}</div></div>`:''}
 
   <!-- TODAY'S BREAKS CARD -->
@@ -690,7 +728,7 @@ function rLog(){
     <div class="lg-box">${sessions.map(s=>`
     <div class="lg-item">
       <div class="sdot" style="background:${SC[s.subject]}"></div>
-      <div class="li-inf"><div class="li-ch">${s.type==='exam'?(s.epName||'Exam Practice'):s.chapter}</div><div class="li-me">${s.type==='exam'?`<span class="ep-badge">EXAM PRACTICE</span> ${s.epSubject||s.subject}`:`${s.subject} · ${s.revision} rev${s.idleMinutes?` · ${s.idleMinutes}min interruptions`:''}${s.chapter&&(S.chapStatus||{})[s.subject+'|'+s.chapter+'|'+(s.revision==='1st'?'r1':'r2')]==='Done'?' · <b style="color:var(--green)">✓ Done</b>':''}`}</div></div>
+      <div class="li-inf"><div class="li-ch">${s.type==='exam'?(s.epName||'Exam Practice'):s.chapter}</div><div class="li-me">${s.type==='exam'?`<span class="ep-badge">EXAM PRACTICE</span> ${s.epSubject||s.subject}`:`${s.subject} · ${s.revision} rev${s.idleMinutes?` · ${s.idleMinutes}min interruptions`:''}${s.chapter&&(S.chapStatus||{})[s.subject+'|'+s.chapter+'|'+REV_LABEL_TO_KEY[s.revision]]==='Done'?' · <b style="color:var(--green)">✓ Done</b>':''}`}</div></div>
       ${s.startTime?`<div class="li-times">${s.startTime}<br>${s.endTime}</div>`:''}
       <div class="li-h">${s.hours.toFixed(1)}h</div>
       <button class="delbtn" data-edit="${s.id}">✏️</button>
@@ -759,10 +797,10 @@ function rRAll(){
 // ─── PROGRESS ──────────────────────────────────────
 function rProgress(){
   const subjs=Object.keys(CHAPTERS);
-  const tR1=subjs.reduce((s,k)=>s+sAll(k,'r1'),0),tR2=subjs.reduce((s,k)=>s+sAll(k,'r2'),0);
-  const lR1=subjs.reduce((s,k)=>s+sLog(k,'r1'),0),lR2=subjs.reduce((s,k)=>s+sLog(k,'r2'),0);
-  const tL=S.sessions.reduce((s,x)=>s+x.hours,0);
-  const p1=getPace(S.settings.rev1EndDate,'r1'),p2=getPace(S.settings.rev2EndDate,'r2');
+  const tR1=subjs.reduce((s,k)=>s+sAll(k,'r1'),0),tR1a=subjs.reduce((s,k)=>s+sAll(k,'r1a'),0),tR2=subjs.reduce((s,k)=>s+sAll(k,'r2'),0);
+  const lR1=subjs.reduce((s,k)=>s+sLog(k,'r1'),0),lR1a=subjs.reduce((s,k)=>s+sLog(k,'r1a'),0),lR2=subjs.reduce((s,k)=>s+sLog(k,'r2'),0);
+  const tL=lR1+lR1a+lR2; // revision-only, consistent with "Total allotted" (tR1+tR1a+tR2) which is also chapter-only
+  const p1=getPace(S.settings.rev1EndDate,'r1'),p1a=getPace(S.settings.rev1EndDate,'r1a'),p2=getPace(S.settings.rev2EndDate,'r2');
   return`
   <div class="card" style="margin-top:9px">
     <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -771,13 +809,18 @@ function rProgress(){
     </div>
     <div class="pbar-w"><div class="pbar" style="width:${Math.min(100,(lR1/tR1)*100).toFixed(1)}%"></div></div>
     <div style="display:flex;justify-content:space-between;margin:9px 0 6px">
+      <span style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">R1a</span>
+      <span style="font-size:12px;font-weight:800;color:var(--gold)">${lR1a.toFixed(1)} / ${tR1a.toFixed(1)}h</span>
+    </div>
+    <div class="pbar-w"><div class="pbar" style="width:${Math.min(100,(lR1a/tR1a)*100).toFixed(1)}%;background:var(--gold)"></div></div>
+    <div style="display:flex;justify-content:space-between;margin:9px 0 6px">
       <span style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">2nd Revision</span>
       <span style="font-size:12px;font-weight:800;color:var(--blue)">${lR2.toFixed(1)} / ${tR2.toFixed(1)}h</span>
     </div>
     <div class="pbar-w"><div class="pbar" style="width:${Math.min(100,(lR2/tR2)*100).toFixed(1)}%;background:var(--blue)"></div></div>
     <div style="display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--muted)">
       <span>Total logged: <b style="color:var(--text)">${tL.toFixed(1)}h</b></span>
-      <span>Total allotted: <b style="color:var(--text)">${(tR1+tR2).toFixed(1)}h</b></span>
+      <span>Total allotted: <b style="color:var(--text)">${(tR1+tR1a+tR2).toFixed(1)}h</b></span>
     </div>
   </div>
 
@@ -798,22 +841,15 @@ function rProgress(){
     const bySubj={};
     epSess.forEach(s=>{const k=s.epSubject||s.subject||'Mixed';if(!bySubj[k])bySubj[k]={h:0,n:0};bySubj[k].h+=s.hours;bySubj[k].n++;});
     const totH=epSess.reduce((t,s)=>t+s.hours,0),totN=epSess.length;
-    const recent=[...epSess].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,5);
     return`<div class="card" style="margin-top:7px">
       <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🎯 Exam Practice Hours</div>
-      <table class="ep-table" style="margin-bottom:12px">
+      <table class="ep-table">
         <thead><tr><th>Subject</th><th>Hours</th><th>Sessions</th></tr></thead>
         <tbody>
           ${Object.entries(bySubj).map(([k,v])=>`<tr><td>${k}</td><td style="color:var(--purple)">${v.h.toFixed(1)}h</td><td style="color:var(--muted)">${v.n}</td></tr>`).join('')}
           <tr><td>Total</td><td style="color:var(--purple)">${totH.toFixed(1)}h</td><td style="color:var(--muted)">${totN}</td></tr>
         </tbody>
       </table>
-      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Recent Sessions</div>
-      ${recent.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:12px">
-        <div style="flex:1"><div style="font-weight:700">${s.epSubject||s.subject||'Mixed'}${s.epName?` — <span style="color:var(--muted);font-weight:400">${s.epName}</span>`:''}</div>
-          <div style="font-size:10px;color:var(--muted)">${fmtDate(s.date)}${s.startTime?` · ${s.startTime}–${s.endTime}`:''}</div></div>
-        <div style="font-weight:800;color:var(--purple)">${s.hours.toFixed(1)}h</div>
-      </div>`).join('')}
     </div>`;
   })()}
 
@@ -823,7 +859,7 @@ function rProgress(){
 
   <div class="stitle">By Subject</div>
   ${subjs.map(subj=>{
-    const a1=sAll(subj,'r1'),a2=sAll(subj,'r2'),l1=sLog(subj,'r1'),l2=sLog(subj,'r2');
+    const a1=sAll(subj,'r1'),a1a=sAll(subj,'r1a'),a2=sAll(subj,'r2'),l1=sLog(subj,'r1'),l1a=sLog(subj,'r1a'),l2=sLog(subj,'r2');
     const chs=CHAPTERS[subj],studied=chs.filter(c=>gfs(subj,c)).length;
     const mastered=chs.filter(c=>RD.every(d=>grs(subj,c)['r'+d]==='Recalled ✓')).length;
     return`<div class="ps">
@@ -834,6 +870,10 @@ function rProgress(){
       <div class="rev-r">
         <div class="rev-lb"><span>1st Rev</span><span style="color:var(--green)">${l1.toFixed(1)}h / ${a1.toFixed(1)}h allotted</span></div>
         <div class="rev-tr"><div class="rev-fi" style="width:${Math.min(100,(l1/a1)*100).toFixed(1)}%;background:var(--green)"></div></div>
+      </div>
+      <div class="rev-r">
+        <div class="rev-lb"><span>R1a</span><span style="color:var(--gold)">${l1a.toFixed(1)}h / ${a1a.toFixed(1)}h allotted</span></div>
+        <div class="rev-tr"><div class="rev-fi" style="width:${Math.min(100,(l1a/a1a)*100).toFixed(1)}%;background:var(--gold)"></div></div>
       </div>
       <div class="rev-r">
         <div class="rev-lb"><span>2nd Rev</span><span style="color:var(--blue)">${l2.toFixed(1)}h / ${a2.toFixed(1)}h allotted</span></div>
@@ -872,6 +912,7 @@ function rRecentTable(){
 // ─── COMPLETION LIKELIHOOD CARD ────────────────────
 function rLikelihoodCard(){
   const l1=getCompletionLikelihood(S.settings.rev1EndDate,'r1');
+  const l1a=getCompletionLikelihood(S.settings.rev1EndDate,'r1a');
   const l2=getCompletionLikelihood(S.settings.rev2EndDate,'r2');
   function row(label,l){
     if(!l)return'';
@@ -904,6 +945,7 @@ function rLikelihoodCard(){
   return`<div class="card" style="margin-top:7px">
     <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">🎯 Completion Projection <span style="font-weight:400;text-transform:none;font-size:9px">(% of remaining work finished by deadline at current pace)</span></div>
     ${row('1st Revision',l1)}
+    ${row('R1a',l1a)}
     ${row('2nd Revision',l2)}
   </div>`;
 }
@@ -998,7 +1040,7 @@ function rAddM(){
   const chs=CHAPTERS[d.subject]||[];
   const dur=d.startTime&&d.endTime?calcH(d.startTime,d.endTime):0;
   const netDur=dur>0?Math.max(0,dur-(d.idleMinutes||0)/60):0;
-  const csKey=(d.subject||'')+'|'+(d.chapter||'')+'|'+(d.revision==='1st'?'r1':'r2');
+  const csKey=(d.subject||'')+'|'+(d.chapter||'')+'|'+(REV_LABEL_TO_KEY[d.revision]||'r1');
   const curStatus=d.csStatus!==undefined?d.csStatus:((S.chapStatus||{})[csKey]||'');
   const SUBJECTS_ALL=[...Object.keys(CHAPTERS),'Mixed (All)'];
   return`<div class="ov" id="ov"><div class="sheet">
@@ -1019,7 +1061,7 @@ function rAddM(){
       `:`
       <div class="fl"><label>Subject</label><select id="f-subj">${Object.keys(CHAPTERS).map(s=>`<option${s===d.subject?' selected':''}>${s}</option>`).join('')}</select></div>
       <div class="fl"><label>Chapter</label><select id="f-chap"><option value="">-- Select Chapter --</option>${chs.map(c=>`<option${c===d.chapter?' selected':''}>${c}</option>`).join('')}</select></div>
-      <div class="fl"><label>Revision</label><select id="f-rev"><option${d.revision==='1st'?' selected':''}>1st</option><option${d.revision==='2nd'?' selected':''}>2nd</option></select></div>
+      <div class="fl"><label>Revision</label><select id="f-rev"><option${d.revision==='1st'?' selected':''}>1st</option><option${d.revision==='R1a'?' selected':''}>R1a</option><option${d.revision==='2nd'?' selected':''}>2nd</option></select></div>
       `}
       <div class="fl">
         <label>Start Time → End Time (IST)</label>
@@ -1113,7 +1155,7 @@ function rIntM(){
 
 function rAllM(){
   const subj=S.editAS,chs=CHAPTERS[subj];
-  const a1T=sAll(subj,'r1').toFixed(1),a2T=sAll(subj,'r2').toFixed(1);
+  const a1T=sAll(subj,'r1').toFixed(1),a1aT=sAll(subj,'r1a').toFixed(1),a2T=sAll(subj,'r2').toFixed(1);
   return`<div class="ov" id="ov"><div class="sheet">
     <div class="sh-hdr"><div class="sh-t">✏️ Allotted Hours</div><button class="sh-x" id="sh-x">✕</button></div>
     <div class="sh-body">
@@ -1123,29 +1165,31 @@ function rAllM(){
         ${s}</button>`).join('')}</div>
       <div style="display:flex;justify-content:space-between;padding:9px 0 6px;border-bottom:1px solid var(--border);font-size:11px">
         <span style="font-weight:800">${subj} · ${chs.length} chapters</span>
-        <span id="ae-tots">Total: <b style="color:var(--green)">${a1T}h</b> R1 · <b style="color:var(--blue)">${a2T}h</b> R2</span>
+        <span id="ae-tots">Total: <b style="color:var(--green)">${a1T}h</b> R1 · <b style="color:var(--gold)">${a1aT}h</b> R1a · <b style="color:var(--blue)">${a2T}h</b> R2</span>
       </div>
       <div style="display:flex;gap:7px;padding:6px 0;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">
-        <span style="flex:1">Chapter</span><span class="ae-lbl">R1h</span><span class="ae-lbl">R2h</span>
+        <span style="flex:1">Chapter</span><span class="ae-lbl">R1h</span><span class="ae-lbl">R1ah</span><span class="ae-lbl">R2h</span>
       </div>
       ${chs.map((chap,idx)=>{
-        const a1=ga(subj,chap,'r1'),a2=ga(subj,chap,'r2');
-        const act1=chapActual(subj,chap,'r1'),act2=chapActual(subj,chap,'r2');
-        const c1=act1>a1?'var(--red)':'var(--green)',c2=act2>a2?'var(--red)':'var(--blue)';
-        const st1=(S.chapStatus||{})[subj+'|'+chap+'|r1']||'',st2=(S.chapStatus||{})[subj+'|'+chap+'|r2']||'';
+        const a1=ga(subj,chap,'r1'),a1a=ga(subj,chap,'r1a'),a2=ga(subj,chap,'r2');
+        const act1=chapActual(subj,chap,'r1'),act1a=chapActual(subj,chap,'r1a'),act2=chapActual(subj,chap,'r2');
+        const c1=act1>a1?'var(--red)':'var(--green)',c1a=act1a>a1a?'var(--red)':'var(--gold)',c2=act2>a2?'var(--red)':'var(--blue)';
+        const st1=(S.chapStatus||{})[subj+'|'+chap+'|r1']||'',st1a=(S.chapStatus||{})[subj+'|'+chap+'|r1a']||'',st2=(S.chapStatus||{})[subj+'|'+chap+'|r2']||'';
         const stLabel=st=>st==='Done'?'✓ Done':st==='In Progress'?'⏳ In Progress':'○ Not Started';
         const stColor=st=>st==='Done'?'var(--green)':st==='In Progress'?'var(--blue)':'var(--muted)';
         return`<div class="ae-row">
         <div class="ae-row-top">
           <div class="ae-ch" title="${chap}">${chap}</div>
           <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r1" value="${a1}">
+          <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r1a" value="${a1a}">
           <input class="ae-inp" type="number" step="0.25" min="0.25" data-as="${subj}|${idx}|r2" value="${a2}">
         </div>
         <div class="ae-status-row">
           <span style="color:${stColor(st1)}">R1: ${stLabel(st1)}</span>
+          <span style="color:${stColor(st1a)}">R1a: ${stLabel(st1a)}</span>
           <span style="color:${stColor(st2)}">R2: ${stLabel(st2)}</span>
         </div>
-        ${(act1>0||act2>0)?`<div class="ae-actual">Actual logged: <b style="color:${c1}">${act1.toFixed(1)}h</b> R1${act2>0?` · <b style="color:${c2}">${act2.toFixed(1)}h</b> R2`:''}</div>`:''}
+        ${(act1>0||act1a>0||act2>0)?`<div class="ae-actual">Actual logged: <b style="color:${c1}">${act1.toFixed(1)}h</b> R1${act1a>0?` · <b style="color:${c1a}">${act1a.toFixed(1)}h</b> R1a`:''}${act2>0?` · <b style="color:${c2}">${act2.toFixed(1)}h</b> R2`:''}</div>`:''}
       </div>`;
       }).join('')}
     </div>
@@ -1312,7 +1356,7 @@ function bindModal(){
       const csStatus=S.md?.csStatus;
       if(csStatus!==undefined){
         if(!S.chapStatus)S.chapStatus={};
-        const ck=subject+'|'+chapter+'|'+(revision==='1st'?'r1':'r2');
+        const ck=subject+'|'+chapter+'|'+(REV_LABEL_TO_KEY[revision]||'r1');
         if(csStatus==='Done'||csStatus==='In Progress')S.chapStatus[ck]=csStatus;
         else delete S.chapStatus[ck];
       }
@@ -1407,9 +1451,12 @@ function bindModal(){
     S.editAS=e.dataset.eas;render();
   }));
   document.querySelectorAll('[data-as]').forEach(inp=>inp.addEventListener('input',()=>{
-    let t1=0,t2=0;
-    document.querySelectorAll('[data-as]').forEach(i=>{const rev=i.dataset.as.split('|')[2],v=parseFloat(i.value)||0;if(rev==='r1')t1+=v;else t2+=v;});
-    const tot=el('ae-tots');if(tot)tot.innerHTML=`Total: <b style="color:var(--green)">${t1.toFixed(1)}h</b> R1 · <b style="color:var(--blue)">${t2.toFixed(1)}h</b> R2`;
+    let t1=0,t1a=0,t2=0;
+    document.querySelectorAll('[data-as]').forEach(i=>{
+      const rev=i.dataset.as.split('|')[2],v=parseFloat(i.value)||0;
+      if(rev==='r1')t1+=v;else if(rev==='r1a')t1a+=v;else t2+=v;
+    });
+    const tot=el('ae-tots');if(tot)tot.innerHTML=`Total: <b style="color:var(--green)">${t1.toFixed(1)}h</b> R1 · <b style="color:var(--gold)">${t1a.toFixed(1)}h</b> R1a · <b style="color:var(--blue)">${t2.toFixed(1)}h</b> R2`;
   }));
   el('btn-save-all')?.addEventListener('click',()=>{
     document.querySelectorAll('[data-as]').forEach(inp=>{
