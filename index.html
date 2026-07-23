@@ -500,7 +500,7 @@ function calcDayEff(date){
     effPct:availM>0?Math.max(0,Math.min(100,Math.round(netM/availM*100))):0,
   };
 }
-function todayH(){return S.sessions.filter(s=>s.date===today()&&s.type!=='exam').reduce((t,x)=>t+x.hours,0);}
+function todayH(){return S.sessions.filter(s=>s.date===today()).reduce((t,x)=>t+x.hours,0);}
 // Hours still physically available to study TODAY, counted from right now
 // until the study window ends — not from the start of the day. Only breaks
 // that fall between now and window-end are subtracted (a break already
