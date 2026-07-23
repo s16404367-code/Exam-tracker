@@ -444,7 +444,7 @@ function getSortedSessions(date){
   // Efficiency, the 14-day chart, and the recent-pace average used in the
   // Completion Projection. None of those should be inflated by time spent
   // on exam practice, since it doesn't reduce remaining chapter-hours.
-  return S.sessions.filter(s=>s.date===date&&s.startTime&&s.endTime&&s.type!=='exam')
+  return S.sessions.filter(s=>s.date===date&&s.startTime&&s.endTime&&true)
     .sort((a,b)=>t2m(a.startTime)-t2m(b.startTime));
 }
 // Smart break: break is truncated if a session starts before break ends.
@@ -591,7 +591,7 @@ function getStreak(){
   let n=0,td=today();
   for(let i=0;i<400;i++){
     const d=addDays(td,-i);
-    if(S.sessions.some(s=>s.date===d&&s.type!=='exam'))n++;else if(i>0)break;
+    if(S.sessions.some(s=>s.date===d&&true))n++;else if(i>0)break;
   }
   return n;
 }
